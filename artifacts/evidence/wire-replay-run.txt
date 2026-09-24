@@ -1,0 +1,68 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- <REDACTED_HOME> Continuation Replay/.venv/bin/python
+rootdir: <REDACTED_HOME> Continuation Replay
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_wire_replay.py::test_wire_legitimate_round_trip_completes_once PASSED [ 25%]
+tests/test_wire_replay.py::test_wire_identical_retry_does_not_duplicate_the_effect FAILED [ 50%]
+tests/test_wire_replay.py::test_wire_changed_input_responses_conflicts_before_dispatch FAILED [ 75%]
+tests/test_wire_replay.py::test_wire_transcript_was_captured PASSED      [100%]
+
+=================================== FAILURES ===================================
+___________ test_wire_identical_retry_does_not_duplicate_the_effect ____________
+
+wire_client = <tests.wire_client.RawStdioClient object at 0x1099212e0>
+oracle = (<reference.backend.IssueStore object at 0x109922150>, <reference.readback.ReadBack object at 0x109921f40>)
+
+    def test_wire_identical_retry_does_not_duplicate_the_effect(
+        wire_client: RawStdioClient, oracle: tuple[IssueStore, ReadBack]
+    ) -> None:
+        """H2 at the wire: replaying one logical continuation creates ONE effect."""
+        _, rb = oracle
+        token = _round_one(wire_client, 20)
+        _retry(wire_client, token, "alpha", 21)
+        _retry(wire_client, token, "alpha", 22)
+        observed = rb.observe_by_title(TITLE)
+>       assert observed.effects == 1, (
+            f"wire replay of one logical continuation created {observed.effects} effects "
+            f"(ids={observed.matching_ids}); a sealed token is not single-use on the wire"
+        )
+E       AssertionError: wire replay of one logical continuation created 2 effects (ids=(1, 2)); a sealed token is not single-use on the wire
+E       assert 2 == 1
+E        +  where 2 = EffectObservation(scope="issue.title == 'wire-spec'", state='applied', matching_ids=(1, 2), detail='2 issue(s) matching title').effects
+
+tests/test_wire_replay.py:85: AssertionError
+_________ test_wire_changed_input_responses_conflicts_before_dispatch __________
+
+wire_client = <tests.wire_client.RawStdioClient object at 0x109946bd0>
+oracle = (<reference.backend.IssueStore object at 0x1099453a0>, <reference.readback.ReadBack object at 0x109944ce0>)
+
+    def test_wire_changed_input_responses_conflicts_before_dispatch(
+        wire_client: RawStdioClient, oracle: tuple[IssueStore, ReadBack]
+    ) -> None:
+        """H1 at the wire: same token + different inputResponses is a different operation."""
+        _, rb = oracle
+        token = _round_one(wire_client, 30)
+        _retry(wire_client, token, "alpha", 31)
+        result = _retry(wire_client, token, "beta", 32)
+>       assert result.get("isError", False) is True or rb.observe_by_body("beta").effects == 0, (
+            "a stale token dispatched a materially different operation (body=beta) on the wire; "
+            "inputResponses is outside the equivalent binding"
+        )
+E       AssertionError: a stale token dispatched a materially different operation (body=beta) on the wire; inputResponses is outside the equivalent binding
+E       assert (False is True or 1 == 0)
+E        +  where False = <built-in method get of dict object at 0x109985100>('isError', False)
+E        +    where <built-in method get of dict object at 0x109985100> = {'content': [{'text': 'created 2', 'type': 'text'}], 'isError': False, 'resultType': 'complete', 'structuredContent': {'result': 'created 2'}, ...}.get
+E        +  and   1 = EffectObservation(scope="issue.body == 'beta'", state='applied', matching_ids=(2,), detail='1 issue(s) matching body').effects
+E        +    where EffectObservation(scope="issue.body == 'beta'", state='applied', matching_ids=(2,), detail='1 issue(s) matching body') = observe_by_body('beta')
+E        +      where observe_by_body = <reference.readback.ReadBack object at 0x109944ce0>.observe_by_body
+
+tests/test_wire_replay.py:99: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_wire_replay.py::test_wire_identical_retry_does_not_duplicate_the_effect
+FAILED tests/test_wire_replay.py::test_wire_changed_input_responses_conflicts_before_dispatch
+========================= 2 failed, 2 passed in 1.10s ==========================
+

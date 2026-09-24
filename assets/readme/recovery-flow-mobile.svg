@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 870" role="img" aria-labelledby="title desc">
+  <title id="title">Lost-reply recovery on a narrow screen</title>
+  <desc id="desc">The consumer continues operation case-03. The guarded server binds the operation and commits an issue with a SQLite ledger record, then exits before replying. The consumer keeps the result unknown. After restart, same-identity status reads the ledger and returns the stored issue-one result.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#64B2FF" stroke-width="1.8" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect x="2" y="2" width="556" height="866" rx="24" fill="#111827" stroke="#334155" stroke-width="3"/>
+  <text x="29" y="47" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="25" font-weight="700">One operation. One issue.</text>
+  <text x="29" y="77" fill="#AFC0D4" font-family="Arial, sans-serif" font-size="17">Reply lost after commit. Outcome unknown.</text>
+
+  <rect x="29" y="105" width="502" height="139" rx="16" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="48" y="136" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">01  CONSUMER</text>
+  <text x="48" y="170" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="21" font-weight="700">Continue case-03</text>
+  <text x="48" y="202" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Signed requestState + body</text>
+  <path d="M280 248v27" stroke="#64B2FF" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="29" y="282" width="502" height="146" rx="16" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="48" y="314" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">02  SDK + APPLICATION GUARD</text>
+  <text x="48" y="348" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="21" font-weight="700">Bind identity before dispatch</text>
+  <text x="48" y="379" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">ID · principal · backend · fingerprint</text>
+  <text x="48" y="406" fill="#FFABA4" font-family="Arial, sans-serif" font-size="17">Exit before reply</text>
+  <path d="M280 433v27" stroke="#64B2FF" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="29" y="468" width="502" height="139" rx="16" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="48" y="500" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">03  SQLITE</text>
+  <text x="48" y="534" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="21" font-weight="700">Commit ledger + issue together</text>
+  <text x="48" y="567" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Applied · issue rows: 1 · stored result: #1</text>
+
+  <rect x="29" y="631" width="502" height="180" rx="16" fill="#172235" stroke="#41628A" stroke-width="2"/>
+  <text x="48" y="665" fill="#FFABA4" font-family="Arial, sans-serif" font-size="18" font-weight="700">LOST REPLY → UNKNOWN</text>
+  <text x="48" y="700" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="20" font-weight="700">After restart: same-identity status</text>
+  <text x="48" y="733" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Read ledger + row → return stored result.</text>
+  <text x="48" y="764" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">A changed continuation conflicts before write.</text>
+  <text x="29" y="847" fill="#AFC0D4" font-family="Arial, sans-serif" font-size="16">Local synthetic fixture · status never grants a fresh write</text>
+</svg>

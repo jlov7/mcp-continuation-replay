@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "protocol_date": "2026-09-22",
+  "protocol_revision": "mcr-completion-v1",
+  "clock": {
+    "normal_epoch": 1790035200,
+    "case_07": {
+      "authority_expires_epoch": 1790035260,
+      "replay_retention_expires_epoch": 1790035560,
+      "request_state_expires_epoch": 1790035800,
+      "after_authority_expiry_epoch": 1790035320
+    },
+    "case_10": {
+      "replay_retention_expires_epoch": 1790035260,
+      "authority_expires_epoch": 1790035560,
+      "request_state_expires_epoch": 1790035800,
+      "after_replay_retention_epoch": 1790035320,
+      "after_request_state_expiry_epoch": 1790035860
+    }
+  },
+  "cases": [
+    {"id": "01", "name": "identical_retry", "expected": "stored_result_one_effect"},
+    {"id": "02", "name": "never_admitted", "expected": "unknown_no_retry"},
+    {"id": "03", "name": "lost_reply_then_explicit_replay", "expected": "reconciled_applied_one_effect"},
+    {"id": "04", "name": "changed_input_responses", "expected": "conflict_before_second_effect"},
+    {"id": "05", "name": "changed_request_state", "expected": "conflict_before_second_effect"},
+    {"id": "06", "name": "different_principal", "expected": "unauthorized_not_equivalent"},
+    {"id": "07", "name": "authority_expires_before_reconciliation", "expected": "write_rejected_observe_without_fresh_write_authority"},
+    {"id": "08", "name": "concurrent_identical_attempts", "expected": "joined_one_apply_one_replay_one_effect"},
+    {"id": "09", "name": "crash_after_commit_before_reply", "expected": "unknown_then_authoritative_applied_no_redispatch"},
+    {"id": "10", "name": "operation_replay_retention_expiry", "expected": "valid_token_rejected_after_retention_tombstone_retained"},
+    {"id": "11", "name": "request_state_stripped", "expected": "unsupported_rejected_no_effect"},
+    {"id": "12", "name": "partial_effect_failed_compensation", "expected": "durable_partial_no_first_effect_replay"}
+  ]
+}

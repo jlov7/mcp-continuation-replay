@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" role="img" aria-labelledby="title desc">
+  <title id="title">MCP Continuation Replay mark</title>
+  <desc id="desc">A blue operation path reaches a coral break in the reply, then loops back to one blue recorded result.</desc>
+  <rect x="2" y="2" width="140" height="140" rx="32" fill="#111827" stroke="#334155" stroke-width="4"/>
+  <path d="M39 45h48c17 0 25 9 25 24" fill="none" stroke="#64B2FF" stroke-width="11" stroke-linecap="round"/>
+  <path d="M105 91c-5 13-15 19-29 19H51c-12 0-20-7-20-19 0-9 5-16 13-19" fill="none" stroke="#64B2FF" stroke-width="11" stroke-linecap="round"/>
+  <path d="M103 70l10 10m0-10l-10 10" stroke="#FF948B" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="39" cy="45" r="9" fill="#64B2FF"/>
+  <circle cx="50" cy="91" r="12" fill="#111827" stroke="#64B2FF" stroke-width="7"/>
+</svg>

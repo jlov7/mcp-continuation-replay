@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_protocol": "../matrix-spec.json",
+  "case_ids": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+  "sdk": {
+    "server": "@modelcontextprotocol/server@2.0.0",
+    "core": "@modelcontextprotocol/core@2.0.0",
+    "protocol": "2026-07-28"
+  },
+  "backend": "shared Python IssueStore via narrow JSON subprocess bridge and SQLite",
+  "normal_epoch": 1790035200,
+  "expected": {
+    "01": "stored_result_one_effect",
+    "02": "unknown_no_retry",
+    "03": "reconciled_applied_one_effect",
+    "04": "conflict_before_second_effect",
+    "05": "conflict_before_second_effect_and_tamper_rejected",
+    "06": "principal_bound_unauthorized_alice_observation",
+    "07": "authority_expired_write_rejected_observe_without_fresh_write_authority",
+    "08": "concurrent_one_apply_one_replay_one_effect",
+    "09": "hard_exit_unknown_then_authoritative_applied_no_redispatch",
+    "10": "retention_rejected_tombstone_and_separate_sdk_expiry",
+    "11": "stripped_state_rejected_valid_initial_round",
+    "12": "durable_partial_failed_compensation_no_repeat_first_effect"
+  }
+}

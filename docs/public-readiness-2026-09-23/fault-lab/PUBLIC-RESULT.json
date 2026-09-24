@@ -1,0 +1,118 @@
+{
+  "artifact_sha256": {
+    "pytest.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout.log": "7073c3b9e5401c688ae183783a52f2e9ccbbabcf7106cfb838a76719d669f400",
+    "pytest/test_bridge_precommit_exit_has0/exit-after-ledger-insert/server.transcript.log": "d60ffa78c88633d349ae6c1ef6f9364cc1f2cd1e808babf9ad08381b736ccca0",
+    "pytest/test_bridge_precommit_exit_has0/exit-after-ledger-insert/store.sqlite3": "a7577f7353e907f52ddecfd49f2d8bdfb98539ff4bdcd63890a8a60f2be3b4a2",
+    "pytest/test_bridge_precommit_exit_has0/exit-after-ledger-insert/store.sqlite3-journal": "2458c0b582b55b60f3e179e3c78f7ec7e4ea5093dfa06033a7041b8393c99178",
+    "pytest/test_bridge_precommit_exit_has1/exit-after-issue-insert/server.transcript.log": "a3b674149ca3fc0fb8565b6a18ef5c6c778bcca6ef4999de99d2f59d38e273e2",
+    "pytest/test_bridge_precommit_exit_has1/exit-after-issue-insert/store.sqlite3": "a7577f7353e907f52ddecfd49f2d8bdfb98539ff4bdcd63890a8a60f2be3b4a2",
+    "pytest/test_bridge_precommit_exit_has1/exit-after-issue-insert/store.sqlite3-journal": "71114f7b4ce371f02b799a1a3163ae92f853e1686d8086cda6d20dd2e0099c0f",
+    "pytest/test_exception_after_issue_ins0/rollback.sqlite3": "c4b7e75460d82ee05713eaa7de28d39fee7be093866064872d9a37cefd1f93ac",
+    "pytest/test_precommit_hard_exit_rolls0/exit-after-ledger-insert/crash.transcript.log": "47b9b43a4a38841540b9c6be9d7a0c81abfc88d0c185ca2b7dd11e8740904618",
+    "pytest/test_precommit_hard_exit_rolls0/exit-after-ledger-insert/store.sqlite3": "631aae4f56f177214cb52daeaaee1439b6c59723b821e2349f10ce6ea6929195",
+    "pytest/test_precommit_hard_exit_rolls0/exit-after-ledger-insert/store.sqlite3-journal": "4d2262cf74cdf5225621f5abf201251423671e432788de02f22149f9803ec0d6",
+    "pytest/test_precommit_hard_exit_rolls1/exit-after-issue-insert/crash.transcript.log": "72eb5579e80ec5ea5452309b0ed0976d741187a2d82a528bf27f65b3aba9d93e",
+    "pytest/test_precommit_hard_exit_rolls1/exit-after-issue-insert/store.sqlite3": "631aae4f56f177214cb52daeaaee1439b6c59723b821e2349f10ce6ea6929195",
+    "pytest/test_precommit_hard_exit_rolls1/exit-after-issue-insert/store.sqlite3-journal": "1a43f4c4f3b7e77f58cfdd84bcd9a192caa1b8a19c782d16250bc53ff3bc9c53",
+    "pytest/test_sqlite_busy_fails_before_0/busy.sqlite3": "0d797b496bd3069f53847ec7ab2e3d11ec0c56d3c7a8d03adea5fd09ff42ec1e"
+  },
+  "cases": [
+    {
+      "name": "test_precommit_hard_exit_rolls_back_both_rows[exit-after-ledger-insert-71]",
+      "status": "passed"
+    },
+    {
+      "name": "test_precommit_hard_exit_rolls_back_both_rows[exit-after-issue-insert-72]",
+      "status": "passed"
+    },
+    {
+      "name": "test_sqlite_busy_fails_before_dispatch_and_preserves_identity",
+      "status": "passed"
+    },
+    {
+      "name": "test_exception_after_issue_insert_rolls_back_both_rows",
+      "status": "passed"
+    },
+    {
+      "name": "test_bridge_precommit_exit_has_no_durable_effect[exit-after-ledger-insert-71]",
+      "status": "passed"
+    },
+    {
+      "name": "test_bridge_precommit_exit_has_no_durable_effect[exit-after-issue-insert-72]",
+      "status": "passed"
+    },
+    {
+      "name": "test_unsafe_new_identity_retry_duplicates_the_effect",
+      "status": "passed"
+    }
+  ],
+  "claim_limit": "same-author fixtures over one Python SQLite engine; TypeScript v2 fault cells use a Python bridge",
+  "executed": 7,
+  "failed": 0,
+  "junit_error": null,
+  "machinery_failure": false,
+  "mcp_python": "2.2.0",
+  "node": "v22.23.2",
+  "not_reported": 0,
+  "omitted_local_artifacts": [
+    {
+      "path": "junit.xml",
+      "reason": "Unmodified JUnit capture contains a local machine hostname; omitted from public source.",
+      "sha256": "c83e3af4b982012df35c51cd39aa9384e426a1c2f708b40645b5d0d2ca0b72b0"
+    }
+  ],
+  "passed": 7,
+  "physical_readback": {
+    "pytest/test_bridge_precommit_exit_has0/exit-after-ledger-insert/store.sqlite3": {
+      "issues": 0,
+      "operations": 0
+    },
+    "pytest/test_bridge_precommit_exit_has1/exit-after-issue-insert/store.sqlite3": {
+      "issues": 0,
+      "operations": 0
+    },
+    "pytest/test_exception_after_issue_ins0/rollback.sqlite3": {
+      "issues": 1,
+      "operations": 1
+    },
+    "pytest/test_precommit_hard_exit_rolls0/exit-after-ledger-insert/store.sqlite3": {
+      "issues": 0,
+      "operations": 0
+    },
+    "pytest/test_precommit_hard_exit_rolls1/exit-after-issue-insert/store.sqlite3": {
+      "issues": 0,
+      "operations": 0
+    },
+    "pytest/test_sqlite_busy_fails_before_0/busy.sqlite3": {
+      "issues": 1,
+      "operations": 1
+    }
+  },
+  "protocol": "fault-lab-v1-exposed-regression",
+  "public_receipt_kind": "derived_from_unmodified_local_fault_lab_result",
+  "pytest_exit_code": 0,
+  "python": "3.13.15",
+  "requested": 7,
+  "skipped": 0,
+  "source_after": {
+    "dirty": false,
+    "head": "0655147047f7d826c3c6d2b0b1e479b7379f17b1"
+  },
+  "source_before": {
+    "dirty": false,
+    "head": "0655147047f7d826c3c6d2b0b1e479b7379f17b1"
+  },
+  "source_changed": false,
+  "source_dirty": false,
+  "source_head": "0655147047f7d826c3c6d2b0b1e479b7379f17b1",
+  "timed_out": false,
+  "timeout_seconds": 120,
+  "typescript_v2_packages": {
+    "@modelcontextprotocol/core": "2.0.0",
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.6.5"
+  },
+  "unmodified_local_result_sha256": "fff351803879530a415e96462b9c1ef4c1ab876b1f746c9fdaf370026f5e99e9",
+  "unsafe_control_detected": true
+}

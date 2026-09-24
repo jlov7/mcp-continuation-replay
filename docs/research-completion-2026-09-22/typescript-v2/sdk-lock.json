@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "registry": "https://registry.npmjs.org/",
+  "packages": {
+    "@modelcontextprotocol/server": {
+      "version": "2.0.0",
+      "tarball_sha256": "b4f0dfda3b73b322f1091b86fabe568994eb2fedef873b12db2c54adc3cfe198",
+      "installed_dist_index_cjs_sha256": "c76c1228e92286e0a0d844ce8d5aaeef2185e50df62beb495a8f34139cc47248"
+    },
+    "@modelcontextprotocol/core": {
+      "version": "2.0.0",
+      "tarball_sha256": "e9433b8d271acad34381bebb50fa68f464edfdef2ee26a35dfd564b5c9ac05e6",
+      "installed_dist_index_cjs_sha256": "3570a86b6fa677842fa33f0f98349b473946dc7f914552ebd4dc736db3d4818c"
+    },
+    "zod": {
+      "version": "4.6.5",
+      "tarball_sha256": "a78c0c533de30dc1c4afc259ac43ac06e390cb0da8d2e32eae355301b50b36fc",
+      "installed_index_cjs_sha256": "d93a8730d52c0fedab13619c8bc971cc99934c13d8dce7c97ee4d03a98d4096e"
+    }
+  }
+}

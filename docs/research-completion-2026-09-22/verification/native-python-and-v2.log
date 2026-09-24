@@ -1,0 +1,55 @@
+........................................................................ [ 76%]
+......................                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_replay_and_equivalence.py::test_replayed_token_must_not_duplicate_the_effect
+  <REDACTED_HOME> ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29d210>
+    @property
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_replay_and_equivalence.py::test_replayed_token_must_not_duplicate_the_effect
+  <REDACTED_HOME> ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29c400>
+    @property
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_12
+  <frozen abc>:117: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29c040>
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_12
+  <frozen abc>:117: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29d7b0>
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_12
+  <frozen abc>:117: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29fb50>
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_12
+  <frozen abc>:117: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10d29df30>
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.13.15-final-0 _______________
+
+Name                                     Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------
+reference/backend.py                       284     26    91%   124, 224, 250, 276-277, 284, 365, 373, 376, 378, 380, 392, 398, 445, 463, 469, 568-589, 624-631
+reference/consumer.py                       29      1    97%   47
+reference/guarded_server_stdio.py          172     30    83%   84, 91-92, 94, 101-102, 104, 111-112, 114, 144, 147, 151-152, 166, 174-175, 190, 192, 200, 203, 205, 207, 223, 254, 256, 259, 317-318, 320
+reference/readback.py                       80      1    99%   57
+reference/server_stdio.py                   41      2    95%   69, 77
+reference/typescript_guarded_bridge.py     104     14    87%   44, 53, 58, 60, 62, 64, 70, 75, 78, 83, 128, 159, 162, 173
+reference/wire_recovery.py                  42      2    95%   54-55
+src/continuation_replay/__init__.py          1      0   100%
+src/continuation_replay/cli.py              44     30    32%   19-26, 30-42, 46-66, 70
+src/continuation_replay/fingerprint.py      63      7    89%   59, 61, 76, 82-90, 110
+----------------------------------------------------------------------
+TOTAL                                      860    113    87%
+Required test coverage of 75.0% reached. Total coverage: 86.86%
+94 passed, 6 warnings in 23.78s

@@ -1,0 +1,10 @@
+{
+  "build": "uv build --offline using existing local cache",
+  "fresh_install": "uv pip install --offline into disposable Python 3.13 virtual environment",
+  "installed_cli_one_valid_vector_sha256": "88144eb9ea51d02758a0e295ec873e6ffb340d1cd0bb61700e92a8c76917a94f",
+  "installed_cli_version": "0.0.1",
+  "scope": "local fresh install and one synthetic CLI vector; no hosted CI or publication",
+  "sdist_sha256": "e2397f30958ab94b88ca355c66627ebe7a1b7cef3cd665303bbaf7043dd94e46",
+  "source_commit": "3db5a1d551c0000c1288adb71cbf22bab2816c2c",
+  "wheel_sha256": "c8d6e22114c7fa1b89c3fca4812ea3c5e8c648a1b2c03975a9dfd9b1c24f6ffd"
+}

@@ -1,0 +1,25 @@
+{
+  "archive_sha256": "17d28a598b3f1af3dd1233e53c40772cb5c0573899a37af24b07dc4c0367bc65",
+  "attempt_relative_path": "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184411Z-1790102651819382000",
+  "label": "typescript-v2-before-backend-fix",
+  "module": "scripts.run_typescript_guarded_matrix",
+  "source_commit": "8c9f30e97a4fe8a98533d1debc2d4c746efab18e",
+  "source_hashes": {
+    "docs/research-completion-2026-09-22/typescript-v2/PROTOCOL.md": "5d5f0921142710ce35f5915711412f456572a266b820e152af0bac043d5318b5",
+    "docs/research-completion-2026-09-22/typescript-v2/inventory.json": "e9e5f761f0d6329395a89a6710112d1cc657fefea5b1a77130f96cc7b074b786",
+    "docs/research-completion-2026-09-22/typescript-v2/sdk-lock.json": "d93488308a757aa8d65ef6801916a0160bf76b7b7782da89485a001a28aa897b",
+    "reference/backend.py": "3a99eed007751b4667b88796f32c7f37fa0b45cad400c73df98dad0919752b16",
+    "reference/consumer.py": "90384590e354cee100b1e4056d2173c2d800e42c6b8911a20321903e10367afc",
+    "reference/readback.py": "3e982acd78192d5d4dc08a12541fcc7b996752b7de8ed0e48b808fc042a6a88d",
+    "reference/typescript_guarded_bridge.py": "7d6fc2b9ff06fb5aca6c1970a57a65634896a18837f1401c6426e74278d3391a",
+    "reference/typescript_guarded_server.cjs": "a7822152fa6dc718500184d44cdce4c43bc010a786b1f37f758cf83c4538d061",
+    "reference/wire_recovery.py": "9c57c30f80157b8873213979387fe56a0c72562572a14944a03a18327094c0fc",
+    "scripts/run_completion_matrix.py": "2d219b1b304783f2ed54b5f9d42da3684aa55eecee25d8b7bf4d6406bfbd861e",
+    "scripts/run_typescript_guarded_matrix.py": "41fc8cd70b84b40a73aad72177151e8d2bab39bdbc3ad6a434f7f8ce5ea66667",
+    "src/continuation_replay/fingerprint.py": "0b63fabd555b87180f8d4491c3efa288029ca7f0d3387cc150a3cdb70f294773",
+    "tests/test_guarded_wire_matrix.py": "a1a76aeef2bc1fc47218a5380049fe44be33d0fda26d65c38dc3ab645ff5db89",
+    "tests/wire_client.py": "ec2950a922943ce0bfdb405e9ccc0fbfcc801968c9d35e08d83924a248699f95",
+    "typescript_v2_tests/test_typescript_guarded_matrix.py": "3f2ed814cf0ffde0fe83e82523b9e26a479615bcff7581d94844041abffe027b"
+  },
+  "summary_sha256": "274ac1f77ac01651096572c8e81391f855c39dd02d95352a1560178c09948456"
+}

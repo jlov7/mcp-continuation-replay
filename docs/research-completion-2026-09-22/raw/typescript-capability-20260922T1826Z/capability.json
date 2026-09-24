@@ -1,0 +1,16 @@
+{
+  "matrix_case_status": "unsupported: no TypeScript guarded SQLite server implementing the frozen matrix boundary",
+  "probe_server_sha256": "401dee0b9d6463319f13370d389e3fc8ac5918619eb3cf6e4034b7efed782f00",
+  "request_protocol_version": "2026-07-28",
+  "scope": "stable TypeScript SDK stdio input_required, signed requestState roundtrip and tamper rejection only",
+  "sdk_module_sha256": {
+    "core": "3570a86b6fa677842fa33f0f98349b473946dc7f914552ebd4dc736db3d4818c",
+    "server": "c76c1228e92286e0a0d844ce8d5aaeef2185e50df62beb495a8f34139cc47248"
+  },
+  "sdk_versions": {
+    "core": "2.0.0",
+    "server": "2.0.0"
+  },
+  "status": "pass",
+  "transcript_sha256": "257e3b3e76bdd0f1abe10c1e3700a4c41b7895c0356e42fc64f3dff53679cb7a"
+}

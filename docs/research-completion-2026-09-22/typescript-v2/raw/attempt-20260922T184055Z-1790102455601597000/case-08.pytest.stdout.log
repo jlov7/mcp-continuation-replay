@@ -1,0 +1,58 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________________ test_guarded_ts_case_08 ____________________________
+
+tmp_path = PosixPath('/private/var/folders/xq/ctgsq65523q9_79h19b0wcyr0000gn/T/pytest-of-<REDACTED_USER>/pytest-199/test_guarded_ts_case_080')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x107b78d60>
+
+    def test_guarded_ts_case_08(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+>       _run(monkeypatch, semantic.test_guarded_case_08_independent_processes_serialize_identical_attempts, tmp_path)
+
+typescript_v2_tests/test_typescript_guarded_matrix.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+typescript_v2_tests/test_typescript_guarded_matrix.py:96: in _run
+    test(tmp_path)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/xq/ctgsq65523q9_79h19b0wcyr0000gn/T/pytest-of-<REDACTED_USER>/pytest-199/test_guarded_ts_case_080')
+
+    def test_guarded_case_08_independent_processes_serialize_identical_attempts(
+        tmp_path: Path,
+    ) -> None:
+        case = _case_dir(tmp_path, "08")
+        db = case / "store.sqlite3"
+        args = _args("08")
+        issuer = _spawn(case, db, "issuer")
+        token = _round_one(issuer, args)
+        issuer_code = _close(issuer)
+        first = _spawn(case, db, "worker-a")
+        second = _spawn(case, db, "worker-b")
+        barrier = threading.Barrier(3)
+        results: list[dict[str, Any]] = []
+        errors: list[BaseException] = []
+    
+        def run(wire: RawStdioClient, req_id: int) -> None:
+            try:
+                barrier.wait(timeout=5)
+                results.append(_structured(_commit(wire, args, token, req_id=req_id)))
+            except Exception as exc:  # noqa: BLE001 - preserve worker failure for parent assertion
+                errors.append(exc)
+    
+        threads = [
+            threading.Thread(target=run, args=(first, 21)),
+            threading.Thread(target=run, args=(second, 22)),
+        ]
+        for thread in threads:
+            thread.start()
+        barrier.wait(timeout=5)
+        for thread in threads:
+            thread.join(timeout=10)
+        assert all(not thread.is_alive() for thread in threads)
+>       assert not errors, errors
+E       AssertionError: [WireError('tool error for tools/call: bridge machinery failure: 1')]
+E       assert not [WireError('tool error for tools/call: bridge machinery failure: 1')]
+
+tests/test_guarded_wire_matrix.py:397: AssertionError
+=========================== short test summary info ============================
+FAILED typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_08
+1 failed in 0.68s

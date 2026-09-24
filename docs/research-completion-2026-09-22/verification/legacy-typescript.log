@@ -1,0 +1,23 @@
+
+> mcp-continuation-replay-typescript@0.0.1 test
+> tsc --noEmit && node --test "tests/**/*.test.ts"
+
+✔ TYPE adapter matches the Python-agreed fingerprint (0.809583ms)
+✔ identical logical requests must coincide in TypeScript (0.162833ms)
+✔ different continuation_state must change the fingerprint (0.159833ms)
+✔ different inputResponses must change the fingerprint (0.123084ms)
+✔ Unicode scalar key order and UTF-8 content are stable (0.100208ms)
+✔ non-interoperable numbers fail closed (0.237625ms)
+✔ integral numeric values use one canonical form (0.090375ms)
+✔ special and integer-like keys remain data and sort canonically (0.086542ms)
+✔ unpaired surrogates fail closed (0.094ms)
+✔ non-JSON object shapes fail closed (1.059833ms)
+✔ SDK era: pinned @modelcontextprotocol/sdk has NO MRTR surface (tested fact) (0.135292ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 171.254333

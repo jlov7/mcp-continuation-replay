@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: false
+          version: '0.12.17'
+          python-version: ${{ matrix.python-version }}
+      - name: Setup Node 22 for cross-language parity tests
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Install pinned dependencies
+        run: uv sync --locked --extra dev --python ${{ matrix.python-version }}
+      - name: Format (ruff)
+        # Historical verifier/test sources retain their source-snapshot bytes;
+        # format new and rewritten implementation files without reflowing them.
+        run: uv run ruff format --check reference/backend.py reference/guarded_server_stdio.py reference/consumer.py reference/readback.py reference/wire_recovery.py reference/loopback_http.py reference/loopback_proxy.py scripts/build_public_export.py scripts/demo_lost_reply.py scripts/run_fault_lab.py scripts/run_portable_vectors.py scripts/verify_public_export.py scripts/verify_sdist_sqlite.py tests/http_client.py tests/test_fault_lab.py tests/test_fault_lab_runner.py tests/test_loopback_identity.py tests/test_loopback_proxy.py tests/test_native_ts_store.py tests/test_next_recovery.py tests/test_portable_vectors.py tests/test_public_export_builder.py tests/test_public_export_verifier.py typescript_v2_tests/test_fault_lab_typescript.py
+      - name: Lint (ruff)
+        run: uv run ruff check .
+      - name: Type checks (package, reference, tools and tests)
+        run: uv run pyright src reference scripts tests typescript_v2_tests
+      - name: Install isolated TypeScript v2 guarded fixture SDK
+        run: npm ci --prefix adapters/typescript-v2
+      - name: Tests and coverage
+        # Pinned-SDK findings are exact witness tests. Collection checks their
+        # node ids and mechanisms; changed behavior or any machinery error fails.
+        env:
+          TS_V2_NODE_MODULES: ${{ github.workspace }}/adapters/typescript-v2/node_modules
+        run: uv run pytest -q -p no:cacheprovider --verify-pinned-findings tests typescript_v2_tests --cov=src --cov=reference --cov-report=term-missing
+      - name: Retained evidence, source snapshots and public export
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |-
+          selected_python="$(uv python find --no-project "${{ matrix.python-version }}")"
+          source_kind="$("$selected_python" -c 'from scripts.build_public_export import detect_source_kind; print(detect_source_kind())')"
+          "$selected_python" -m scripts.build_public_export --source-kind "$source_kind" "$RUNNER_TEMP/public-export"
+          candidate="$RUNNER_TEMP/public-export/mcp-continuation-replay-$(git rev-parse --short=8 HEAD)"
+          cd "$candidate"
+          "$selected_python" -m scripts.verify_public_export
+      - name: Build wheel and source distribution
+        run: |-
+          uv build
+          selected_python="$(uv python find --no-project "${{ matrix.python-version }}")"
+          "$selected_python" -m scripts.verify_sdist_sqlite dist/*.tar.gz
+      - name: Installed CLI smoke
+        run: |-
+          selected_python="$(uv python find --no-project "${{ matrix.python-version }}")"
+          "$selected_python" -m venv "$RUNNER_TEMP/install-smoke"
+          "$RUNNER_TEMP/install-smoke/bin/pip" install dist/*.whl
+          "$RUNNER_TEMP/install-smoke/bin/continuation-replay-fingerprint" --version
+          cd "$RUNNER_TEMP"
+          printf '%s\n' '{"principal":"ci","tool_id":"smoke","tool_version":"1","arguments":{"n":1}}' \
+            | CONTINUATION_REPLAY_FINGERPRINT_KEY_HEX=000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f \
+              "$RUNNER_TEMP/install-smoke/bin/continuation-replay-fingerprint" \
+            | grep -E '^[0-9a-f]{64}$'
+
+  typescript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: adapters/typescript
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Node 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: TypeScript adapter tests
+        run: npm test

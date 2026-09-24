@@ -1,0 +1,192 @@
+{
+  "_header": "Shared cross-language fingerprint vectors. One entry per discriminating case, expressed as a canonical LogicalRequest. Both adapters must produce byte-identical fingerprints for every name. Vector 00 is the agreed control. Vectors 01/08/09 are the SAME logical operation (so their fingerprints must coincide); 04/06/11 differ materially (so theirs must differ).",
+  "vectors": [
+    {
+      "name": "00_control_single_round",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "awaiting-body",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "01_identical_retry",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "sealed-v1",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "02_never_admitted",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": null,
+        "input_responses": {}
+      }
+    },
+    {
+      "name": "03_lost_reply_replay",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "reply-lost-after-commit",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "04_changed_input_responses",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "sealed-v1",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "beta" } } }
+      }
+    },
+    {
+      "name": "05_tampered_request_state",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "sealed-v1-TAMPERED",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "06_different_principal",
+      "request": {
+        "principal": "bob",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "sealed-v1",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "07_approval_expired",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "expired-after-ttl",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "08_concurrent_attempt_a",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "sealed-v1",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "09_crash_after_commit",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "reply-dropped-by-crash",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "10_key_retention_expired",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": "key-rotated-away",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "11_metadata_stripped",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": null,
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "12_partial_then_compensated",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue_with_watcher",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec", "watcher": "audit@example.test" },
+        "continuation_state": "partial-watcher-failed",
+        "input_responses": { "body": { "action": "accept", "content": { "body": "alpha" } } }
+      }
+    },
+    {
+      "name": "unsafe_new_identity_retry",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "title": "spec" },
+        "continuation_state": null,
+        "input_responses": {}
+      }
+    },
+    {
+      "name": "unicode_scalar_order_and_utf8",
+      "request": {
+        "principal": "álîçé",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "": "bmp", "𐀀": "astral", "text": "Café 😀 " },
+        "continuation_state": "状態",
+        "input_responses": { "回答": { "action": "accept", "content": { "body": "naïve" } } }
+      }
+    },
+    {
+      "name": "maximum_safe_integer",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "sequence": 9007199254740991 },
+        "continuation_state": null,
+        "input_responses": null
+      }
+    },
+    {
+      "name": "special_and_integer_like_keys",
+      "request": {
+        "principal": "alice",
+        "tool_id": "create_issue",
+        "tool_version": "1.0",
+        "arguments": { "10": "ten", "2": "two", "__proto__": "data" },
+        "continuation_state": null,
+        "input_responses": null
+      }
+    }
+  ]
+}

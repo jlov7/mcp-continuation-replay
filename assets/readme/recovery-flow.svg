@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 600" role="img" aria-labelledby="title desc">
+  <title id="title">Lost-reply recovery in the guarded local fixture</title>
+  <desc id="desc">First, a consumer continues one operation through the guarded MCP server. SQLite commits issue one and the operation ledger, but the reply is lost. The consumer keeps the result unknown. After restart, it asks status for the same operation identity. The guard reads the ledger and issue row, then returns the stored applied result without creating a second issue.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#64B2FF" stroke-width="1.8" stroke-linejoin="round"/>
+    </marker>
+    <marker id="coral-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#FF948B" stroke-width="1.8" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect x="2" y="2" width="1116" height="596" rx="28" fill="#111827" stroke="#334155" stroke-width="3"/>
+  <text x="44" y="53" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="28" font-weight="700">One operation. One physical issue.</text>
+  <text x="44" y="84" fill="#AFC0D4" font-family="Arial, sans-serif" font-size="18">The reply is lost after commit; the result stays unknown until identity-bound read-back.</text>
+
+  <rect x="43" y="124" width="290" height="183" rx="18" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="63" y="157" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">01  CONSUMER</text>
+  <text x="63" y="194" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="22" font-weight="700">Continue case-03</text>
+  <text x="63" y="225" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Signed requestState + body</text>
+  <text x="63" y="260" fill="#FFABA4" font-family="Arial, sans-serif" font-size="18" font-weight="700">No reply → unknown</text>
+
+  <rect x="414" y="124" width="290" height="183" rx="18" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="434" y="157" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">02  SDK + APP GUARD</text>
+  <text x="434" y="194" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="22" font-weight="700">Bind identity</text>
+  <text x="434" y="225" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">ID · principal · backend</text>
+  <text x="434" y="251" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">+ request fingerprint</text>
+  <text x="434" y="280" fill="#FFABA4" font-family="Arial, sans-serif" font-size="16">Exit before reply</text>
+
+  <rect x="785" y="124" width="290" height="183" rx="18" fill="#1E293B" stroke="#41628A" stroke-width="2"/>
+  <text x="805" y="157" fill="#64B2FF" font-family="Arial, sans-serif" font-size="17" font-weight="700">03  SQLITE</text>
+  <text x="805" y="194" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="22" font-weight="700">Commit together</text>
+  <text x="805" y="225" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Operation ledger: applied</text>
+  <text x="805" y="251" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="17">Physical issue rows: 1</text>
+  <text x="805" y="280" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="16">Stored result: issue #1</text>
+
+  <path d="M339 207h65" stroke="#64B2FF" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <path d="M710 207h65" stroke="#64B2FF" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <path d="M414 285h-47" stroke="#FF948B" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#coral-arrow)"/>
+  <path d="M362 273l13 24m0-24l-13 24" stroke="#FF948B" stroke-width="4" stroke-linecap="round"/>
+
+  <path d="M48 342h1024" stroke="#334155" stroke-width="2"/>
+  <text x="44" y="384" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="23" font-weight="700">After restart</text>
+  <rect x="43" y="408" width="1032" height="139" rx="18" fill="#172235" stroke="#41628A" stroke-width="2"/>
+  <circle cx="91" cy="448" r="19" fill="#264A6B" stroke="#64B2FF" stroke-width="2"/>
+  <text x="85" y="455" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="20" font-weight="700">4</text>
+  <text x="123" y="454" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="19" font-weight="700">Same identity → get_operation_status</text>
+  <path d="M487 448h91" stroke="#64B2FF" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <circle cx="616" cy="448" r="19" fill="#264A6B" stroke="#64B2FF" stroke-width="2"/>
+  <text x="610" y="455" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="20" font-weight="700">5</text>
+  <text x="648" y="454" fill="#F2F6FD" font-family="Arial, sans-serif" font-size="19" font-weight="700">Ledger + row → stored result</text>
+  <text x="77" y="505" fill="#CFD9E6" font-family="Arial, sans-serif" font-size="18">Authoritative applied status returns issue #1. An exact replay returns the same result; changed inputs conflict.</text>
+  <text x="44" y="577" fill="#AFC0D4" font-family="Arial, sans-serif" font-size="16">Local synthetic fixture · status read does not authorize a fresh write</text>
+</svg>

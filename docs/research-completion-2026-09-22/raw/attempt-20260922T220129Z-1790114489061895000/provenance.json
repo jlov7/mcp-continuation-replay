@@ -1,0 +1,54 @@
+{
+  "command_template": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_guarded_wire_matrix.py::TEST_NAME"
+  ],
+  "environment_allowlist_names": [
+    "PATH",
+    "LANG",
+    "LC_ALL",
+    "TMPDIR",
+    "SYSTEMROOT",
+    "WIRE_SERVER_DB",
+    "WIRE_BACKEND_ID",
+    "WIRE_PRINCIPAL",
+    "WIRE_CLOCK_EPOCH",
+    "WIRE_AUTHORITY_TTL",
+    "WIRE_REPLAY_RETENTION_TTL",
+    "WIRE_REQUEST_STATE_TTL",
+    "WIRE_STATE_KEY_HEX",
+    "WIRE_FINGERPRINT_KEY_HEX",
+    "WIRE_FAULT"
+  ],
+  "environment_values_recorded": false,
+  "mcp_version": "2.2.0",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "protocol_commit": "a529c959f990520857f5644b21e4ff2531bed7c9",
+  "python": "3.13.15",
+  "sdk_module_sha256": {
+    "mcp.server.mcpserver": "4479ca6d7527a9719329c5678e16a471999181650cd09646381cdd58a4beb67c",
+    "mcp.server.request_state": "0dabe65f9d113b85e17e38dac1cb6c543dab6e0d8adcf45c931b212ea4dec429"
+  },
+  "source_hashes": {
+    "docs/research-completion-2026-09-22/PROTOCOL.md": "7c7252bf15eb650f39694c261816f765c2409dc3724c1ccf1f75ef390672e518",
+    "docs/research-completion-2026-09-22/matrix-spec.json": "588c0c70128a40c9604de91396a20c69e80f345fdb044c91fa4b57a93760127b",
+    "reference/backend.py": "ef81684dffe8f9cd844967dfcbda5a223ffbaa98b2b8042e3663e3836b1d5cc9",
+    "reference/consumer.py": "90384590e354cee100b1e4056d2173c2d800e42c6b8911a20321903e10367afc",
+    "reference/guarded_server_stdio.py": "5a4a31f5056c3179e8257fa8d2562dc45ff416f9f27378de12c5faddfe0441f1",
+    "reference/readback.py": "3e982acd78192d5d4dc08a12541fcc7b996752b7de8ed0e48b808fc042a6a88d",
+    "reference/wire_recovery.py": "9c57c30f80157b8873213979387fe56a0c72562572a14944a03a18327094c0fc",
+    "scripts/current_typescript_mrtr_server.cjs": "401dee0b9d6463319f13370d389e3fc8ac5918619eb3cf6e4034b7efed782f00",
+    "scripts/probe_current_typescript_sdk.py": "1426b3745ceabcc75515dea90806532722958027c26c0c940c0c5af329664dbb",
+    "scripts/run_completion_matrix.py": "ee45a13121443432fcc8417889d01c37bdfd783b7f9dbdd3dcf1b62d1bc4e4cd",
+    "tests/coverage_startup/sitecustomize.py": "2c7b479b20b3f81bda5066e7ec33108cb708b78daae95b90a4ad0a565490800d",
+    "tests/test_guarded_wire_matrix.py": "a1a76aeef2bc1fc47218a5380049fe44be33d0fda26d65c38dc3ab645ff5db89",
+    "tests/test_matrix_evidence_gate.py": "3c9b2a4f771d11a5fe370b33b3bc66020a6596d17142acac1fdf25af76b2f435",
+    "tests/wire_client.py": "66ee769e6231b88a0dc355d9f6a889c10be94b4d4814fbde2a3720416b00c7fe"
+  },
+  "source_head": "71e08e7eb0673c3902205456d815c29a749843ec"
+}

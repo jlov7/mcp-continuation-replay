@@ -1,0 +1,73 @@
+{
+  "command_template": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "typescript_v2_tests/test_typescript_guarded_matrix.py::test_guarded_ts_case_XX"
+  ],
+  "environment_allowlist_names": [
+    "PATH",
+    "LANG",
+    "LC_ALL",
+    "TMPDIR",
+    "SYSTEMROOT",
+    "PYTHONPATH",
+    "TS_V2_NODE_MODULES",
+    "NODE_PATH",
+    "WIRE_SERVER_DB",
+    "WIRE_BACKEND_ID",
+    "WIRE_PRINCIPAL",
+    "WIRE_CLOCK_EPOCH",
+    "WIRE_AUTHORITY_TTL",
+    "WIRE_REPLAY_RETENTION_TTL",
+    "WIRE_REQUEST_STATE_TTL",
+    "WIRE_STATE_KEY_HEX",
+    "WIRE_FINGERPRINT_KEY_HEX",
+    "WIRE_FAULT",
+    "MATRIX_ARTIFACT_DIR",
+    "MATRIX_EVIDENCE_JSONL"
+  ],
+  "environment_values_recorded": false,
+  "frozen_protocol_commit": "5af1fb030f9dae00b4ed336f0bd99237b23d9b05",
+  "protocol_version": "2026-07-28",
+  "python_attempt_summary_sha256": "274ac1f77ac01651096572c8e81391f855c39dd02d95352a1560178c09948456",
+  "python_source_commit": "3db5a1d551c0000c1288adb71cbf22bab2816c2c",
+  "sdk_packages": {
+    "core": {
+      "module_sha256": "3570a86b6fa677842fa33f0f98349b473946dc7f914552ebd4dc736db3d4818c",
+      "version": "2.0.0"
+    },
+    "server": {
+      "module_sha256": "c76c1228e92286e0a0d844ce8d5aaeef2185e50df62beb495a8f34139cc47248",
+      "version": "2.0.0"
+    },
+    "zod": {
+      "module_sha256": "d93a8730d52c0fedab13619c8bc971cc99934c13d8dce7c97ee4d03a98d4096e",
+      "version": "4.6.5"
+    }
+  },
+  "source_hashes": {
+    "adapters/typescript-v2/package-lock.json": "d0be5d431e781be9f0830988d1b1b0ca38610239be0fb7630dda07890aadad91",
+    "adapters/typescript-v2/package.json": "955ccec813d61e9ad79eef8366634a0d5d817c97f0f915b70caa736390f7a6e2",
+    "docs/research-completion-2026-09-22/typescript-v2/PROTOCOL.md": "e8f306cf0450eda9807aece644b9419a6f88d552f3965749f0a05d8f1f0ab148",
+    "docs/research-completion-2026-09-22/typescript-v2/inventory.json": "e9e5f761f0d6329395a89a6710112d1cc657fefea5b1a77130f96cc7b074b786",
+    "docs/research-completion-2026-09-22/typescript-v2/sdk-lock.json": "d93488308a757aa8d65ef6801916a0160bf76b7b7782da89485a001a28aa897b",
+    "reference/backend.py": "ef81684dffe8f9cd844967dfcbda5a223ffbaa98b2b8042e3663e3836b1d5cc9",
+    "reference/consumer.py": "90384590e354cee100b1e4056d2173c2d800e42c6b8911a20321903e10367afc",
+    "reference/readback.py": "3e982acd78192d5d4dc08a12541fcc7b996752b7de8ed0e48b808fc042a6a88d",
+    "reference/typescript_guarded_bridge.py": "6d60c12d07807b7038ab13c4df6816a0138d670010923c0ada43774292528783",
+    "reference/typescript_guarded_server.cjs": "a8d9f7dd6578efce4a19f9ddd11e03fc26428252f47c9b6f2e14f0c8d2991644",
+    "reference/wire_recovery.py": "9c57c30f80157b8873213979387fe56a0c72562572a14944a03a18327094c0fc",
+    "scripts/run_completion_matrix.py": "ee45a13121443432fcc8417889d01c37bdfd783b7f9dbdd3dcf1b62d1bc4e4cd",
+    "scripts/run_typescript_guarded_matrix.py": "661d1cc62d50af8ebe96df7a2bc7440b75e98c348cb736f590e04166ccd7a2b8",
+    "src/continuation_replay/fingerprint.py": "0b63fabd555b87180f8d4491c3efa288029ca7f0d3387cc150a3cdb70f294773",
+    "tests/coverage_startup/sitecustomize.py": "2c7b479b20b3f81bda5066e7ec33108cb708b78daae95b90a4ad0a565490800d",
+    "tests/test_guarded_wire_matrix.py": "a1a76aeef2bc1fc47218a5380049fe44be33d0fda26d65c38dc3ab645ff5db89",
+    "tests/wire_client.py": "66ee769e6231b88a0dc355d9f6a889c10be94b4d4814fbde2a3720416b00c7fe",
+    "typescript_v2_tests/test_typescript_guarded_matrix.py": "1fb5e4b63763e783a08ac564119b88482b0240939590ce09d91b231a200e8ae3"
+  },
+  "source_head": "8361f25baa0b1c0a5d138f2905afdc495f8994ed"
+}

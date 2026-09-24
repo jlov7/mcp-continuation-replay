@@ -1,0 +1,6 @@
+WARNING: The directory '<REDACTED_HOME>' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /private/tmp/mcr-package-build-final-20260922/mcp_continuation_replay-0.0.1-py3-none-any.whl
+Installing collected packages: mcp-continuation-replay
+Successfully installed mcp-continuation-replay-0.0.1
+0.0.1
+1663c1dcff01140c0e8cd0cebc6e5d8ca57d10e73e07f85db8a364cc98fd36ba

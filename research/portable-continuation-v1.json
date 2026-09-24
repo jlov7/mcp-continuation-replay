@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "keyHex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "base": {
+    "principal": "alice",
+    "tool_id": "create_guarded_issue",
+    "tool_version": "1",
+    "arguments": {"operation_id": "op-1", "title": "spec", "mode": "atomic"},
+    "continuation_state": "signed-state-nonce-a",
+    "input_responses": {"body": {"action": "accept", "content": {"body": "alpha"}}}
+  },
+  "vectors": [
+    {"name": "identical", "changes": {}, "expected": "replay", "kind": "reference_policy"},
+    {"name": "changed_accepted_input", "changes": {"input_responses": {"body": {"action": "accept", "content": {"body": "beta"}}}}, "expected": "conflict", "kind": "server_single_use"},
+    {"name": "new_issuance_nonce", "changes": {"continuation_state": "signed-state-nonce-b"}, "expected": "conflict", "kind": "reference_identity_policy"},
+    {"name": "different_principal", "changes": {"principal": "bob"}, "expected": "conflict", "kind": "reference_identity_policy"},
+    {"name": "stripped_state", "changes": {"continuation_state": null}, "expected": "reject", "kind": "reference_state_policy"},
+    {"name": "lost_reply_unknown", "changes": {}, "transport": "lost_reply", "expected": "status_only", "kind": "reference_recovery_policy"},
+    {"name": "missing_record_unknown", "changes": {}, "transport": "lost_reply_missing_record", "expected": "stop_unknown", "kind": "reference_recovery_policy"}
+  ]
+}

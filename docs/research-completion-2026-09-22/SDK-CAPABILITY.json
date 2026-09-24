@@ -1,0 +1,23 @@
+{
+  "python_sdk": {
+    "distribution": "mcp",
+    "mcp_server_implementation_sha256": "290a3a7e73a328603b36fc8c44bc64ab62afbe136edda14e254d3aa491c8b034",
+    "primary_release": "https://pypi.org/project/mcp/2.2.0/",
+    "pyproject_sha256": "377c42bce90ed1ecb94dc2cbaaf6c5cc3f59c369d3d7e033e9a8c8c6ec30f43b",
+    "request_state_security_sha256": "0dabe65f9d113b85e17e38dac1cb6c543dab6e0d8adcf45c931b212ea4dec429",
+    "uv_lock_sha256": "d25d02ac2e332e33284d12fd4422eb4d7bfef091cf30ebf804120232d0784ad4",
+    "version": "2.2.0"
+  },
+  "scope": "Python frozen twelve-case guarded behavior; TypeScript stable SDK capability probe only. No TypeScript guarded SQLite matrix.",
+  "status": "observed_after_matrix_same_installed_environment",
+  "typescript_sdk": {
+    "core_tarball_sha256": "e9433b8d271acad34381bebb50fa68f464edfdef2ee26a35dfd564b5c9ac05e6",
+    "core_version": "2.0.0",
+    "primary_roadmap": "https://github.com/modelcontextprotocol/typescript-sdk/blob/main/ROADMAP.md",
+    "probe": "docs/research-completion-2026-09-22/raw/typescript-capability-20260922T1826Z/capability.json",
+    "probe_sha256": "7690f43a0b4a484002458e6c885115a212a91987bfb26e241a10e0e64858d1a6",
+    "server_tarball_sha256": "b4f0dfda3b73b322f1091b86fabe568994eb2fedef873b12db2c54adc3cfe198",
+    "server_version": "2.0.0",
+    "zod_tarball_sha256": "a78c0c533de30dc1c4afc259ac43ac06e390cb0da8d2e32eae355301b50b36fc"
+  }
+}
