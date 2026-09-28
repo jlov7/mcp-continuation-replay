@@ -105,7 +105,7 @@ server.registerTool('create_guarded_issue', {
   if (responses === undefined) {
     if (ctx.mcpReq.requestState() !== undefined) throw new Error('requestState without input responses');
     const state = {
-      v: 1, operation_id, nonce: crypto.randomBytes(16).toString('hex'),
+      v: 1, operation_id, title, mode, nonce: crypto.randomBytes(16).toString('hex'),
       issued_at: settings.now, authority_expires_at: settings.now + settings.authorityTtl,
       replay_expires_at: settings.now + settings.replayTtl,
     };
@@ -119,20 +119,30 @@ server.registerTool('create_guarded_issue', {
   }
   const state = ctx.mcpReq.requestState();
   if (state === undefined) throw new Error('unsupported continuation: input responses require requestState');
-  if (!responses || Object.keys(responses).length !== 1 || !Object.hasOwn(responses, 'body')) {
-    throw new Error('unsupported input response fields');
+  if (state.operation_id !== operation_id || state.title !== title || state.mode !== mode) {
+    throw new Error('requestState arguments mismatch');
+  }
+  if (!responses || typeof responses !== 'object' || Array.isArray(responses)) {
+    throw new Error('invalid input responses');
+  }
+  if (!Object.hasOwn(responses, 'body') || responses.body === null) {
+    if (settings.now >= state.authority_expires_at) throw new Error('operation_authority_expired');
+    return inputRequired({
+      inputRequests: { body: inputRequired.elicit({
+        message: `Body for ${title}?`,
+        requestedSchema: { type: 'object', properties: { body: { type: 'string' } }, required: ['body'] },
+      }) },
+      requestState: await codec.mint(state, ctx),
+    });
   }
   const accepted = acceptedContent(responses, 'body');
   const bodyResponse = responses.body;
   const content = bodyResponse?.content;
   if (!accepted || typeof accepted.body !== 'string' || !bodyResponse ||
       typeof bodyResponse !== 'object' || Array.isArray(bodyResponse) ||
-      Object.keys(bodyResponse).some(key => !['_meta', 'action', 'content'].includes(key)) ||
       !Object.hasOwn(bodyResponse, 'action') || !Object.hasOwn(bodyResponse, 'content') ||
       bodyResponse.action !== 'accept' ||
-      (bodyResponse._meta !== undefined && bodyResponse._meta !== null) ||
       !content || typeof content !== 'object' || Array.isArray(content) ||
-      Object.keys(content).length !== 1 || !Object.hasOwn(content, 'body') ||
       typeof content.body !== 'string') {
     throw new Error('body response must be accepted text');
   }

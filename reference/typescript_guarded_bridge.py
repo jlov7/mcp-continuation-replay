@@ -45,16 +45,38 @@ def _required_string(value: Any, name: str) -> str:
     return value
 
 
-def _state(value: Any, operation_id: str, now_epoch: float) -> dict[str, Any]:
-    fields = {"v", "operation_id", "nonce", "issued_at", "authority_expires_at", "replay_expires_at"}
-    if not isinstance(value, dict) or set(value) != fields or type(value["v"]) is not int or value["v"] != 1:
+def _state(
+    value: Any, operation_id: str, title: str, mode: str, now_epoch: float
+) -> dict[str, Any]:
+    fields = {
+        "v",
+        "operation_id",
+        "title",
+        "mode",
+        "nonce",
+        "issued_at",
+        "authority_expires_at",
+        "replay_expires_at",
+    }
+    if (
+        not isinstance(value, dict)
+        or set(value) != fields
+        or type(value["v"]) is not int
+        or value["v"] != 1
+    ):
         raise ValueError("invalid application requestState")
     if value["operation_id"] != operation_id:
         raise ValueError("requestState operation binding mismatch")
+    if value["title"] != title or value["mode"] != mode:
+        raise ValueError("requestState arguments mismatch")
     _required_string(value["nonce"], "nonce")
     for name in ("issued_at", "authority_expires_at", "replay_expires_at"):
         field = value[name]
-        if isinstance(field, bool) or not isinstance(field, int | float) or not math.isfinite(field):
+        if (
+            isinstance(field, bool)
+            or not isinstance(field, int | float)
+            or not math.isfinite(field)
+        ):
             raise ValueError(f"{name} must be finite")
     if value["issued_at"] > now_epoch:
         raise ValueError("issued_at is in the future")
@@ -76,14 +98,16 @@ def _apply(store: IssueStore, value: dict[str, Any], now_epoch: float) -> dict[s
     mode = value["mode"]
     if mode not in {"atomic", "partial"}:
         raise ValueError("unsupported mode")
-    state = _state(value["state"], operation_id, now_epoch)
+    state = _state(value["state"], operation_id, title, mode, now_epoch)
     responses = value["responses"]
     expected = {"body": {"_meta": None, "action": "accept", "content": {"body": body}}}
     if responses != expected:
         raise ValueError("unsupported accepted input response")
     principal = _required_string(os.environ.get("WIRE_PRINCIPAL"), "WIRE_PRINCIPAL")
     backend = _required_string(os.environ.get("WIRE_BACKEND_ID"), "WIRE_BACKEND_ID")
-    key = bytes.fromhex(_required_string(os.environ.get("WIRE_FINGERPRINT_KEY_HEX"), "WIRE_FINGERPRINT_KEY_HEX"))
+    key = bytes.fromhex(
+        _required_string(os.environ.get("WIRE_FINGERPRINT_KEY_HEX"), "WIRE_FINGERPRINT_KEY_HEX")
+    )
     request_fingerprint = fingerprint(
         LogicalRequest(
             principal=principal,
@@ -113,6 +137,7 @@ def _apply(store: IssueStore, value: dict[str, Any], now_epoch: float) -> dict[s
             **common,
         )
     else:
+
         def precommit_fault(point: str) -> None:
             if os.environ.get("WIRE_FAULT") == f"exit-{point}":
                 os._exit(71 if point == "after-ledger-insert" else 72)
@@ -140,7 +165,6 @@ def _status(store: IssueStore, value: dict[str, Any], now_epoch: float) -> dict[
         now=lambda: datetime.fromtimestamp(now_epoch, UTC),
     )
     observation = readback.reconcile_operation(identity)
-    record = store.operation_record(identity)
     return {
         "operationId": operation_id,
         "principal": principal,
@@ -157,7 +181,7 @@ def _status(store: IssueStore, value: dict[str, Any], now_epoch: float) -> dict[
         "state": observation.state,
         "matchingIds": list(observation.matching_ids),
         "detail": observation.detail,
-        "storedResult": record.result if record is not None else None,
+        "storedResult": observation.stored_result,
     }
 
 
@@ -184,8 +208,20 @@ def main() -> int:
             store.close()
         print(json.dumps({"ok": True, "result": result}, separators=(",", ":")))
         return 0
-    except (ValueError, TypeError, OperationConflict, OperationAuthorityExpired, OperationRetentionExpired, OperationInProgress) as exc:
-        print(json.dumps({"ok": False, "error": type(exc).__name__, "detail": str(exc)}, separators=(",", ":")))
+    except (
+        ValueError,
+        TypeError,
+        OperationConflict,
+        OperationAuthorityExpired,
+        OperationRetentionExpired,
+        OperationInProgress,
+    ) as exc:
+        print(
+            json.dumps(
+                {"ok": False, "error": type(exc).__name__, "detail": str(exc)},
+                separators=(",", ":"),
+            )
+        )
         return 0
 
 

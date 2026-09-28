@@ -13,6 +13,7 @@ import json
 import os
 import sys
 import threading
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -131,7 +132,122 @@ def _rejects(call: Any, mechanism: str) -> str:
     return mechanism
 
 
-def _record(case_id: str, facts: dict[str, Any], paths: list[str | Path], exit_codes: list[int]) -> None:
+@pytest.mark.parametrize(
+    "responses",
+    [
+        {"body": {"action": "accept", "content": {"body": "alpha", "other": "value"}}},
+        {"body": {"action": "accept", "content": {"body": "alpha"}, "other": "value"}},
+        {"body": {"action": "accept", "content": {"body": "alpha"}, "_meta": {"trace": "value"}}},
+        {"body": {"action": "accept", "content": {"body": "alpha"}}, "other": {"action": "accept"}},
+    ],
+)
+def test_guarded_ignores_unexpected_response_fields(tmp_path: Path, responses: dict) -> None:
+    case = tmp_path / "response-shape"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    wire = _spawn(case, db, "server")
+    args = _args("shape")
+    try:
+        token = _round_one(wire, args)
+        first = _structured(
+            wire.request(
+                "tools/call",
+                {
+                    "name": "create_guarded_issue",
+                    "arguments": args,
+                    "requestState": token,
+                    "inputResponses": responses,
+                },
+                11,
+            )
+        )
+        replay = _structured(_commit(wire, args, token, req_id=12))
+        assert first["replayed"] is False and replay["replayed"] is True
+        assert replay["result"] == first["result"]
+        with closing(IssueStore(str(db), backend_id=BACKEND)) as store:
+            assert store.count() == store.operation_count() == 1
+    finally:
+        _close(wire)
+
+
+def test_guarded_reissues_missing_required_response(tmp_path: Path) -> None:
+    case = tmp_path / "missing-body"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    wire = _spawn(case, db, "server")
+    args = _args("missing-body")
+    try:
+        token = _round_one(wire, args)
+        again = wire.request(
+            "tools/call",
+            {
+                "name": "create_guarded_issue",
+                "arguments": args,
+                "requestState": token,
+                "inputResponses": {"other": {"action": "accept"}},
+            },
+            11,
+        )
+        assert again["resultType"] == "input_required"
+        with closing(IssueStore(str(db), backend_id=BACKEND)) as store:
+            assert store.count() == store.operation_count() == 0
+        second_token = again["requestState"]
+        assert isinstance(second_token, str)
+        assert _structured(_commit(wire, args, second_token, req_id=12))["replayed"] is False
+    finally:
+        _close(wire)
+
+
+@pytest.mark.parametrize("changed", [{"title": "changed"}, {"mode": "partial"}])
+def test_guarded_continuation_cannot_change_arguments(tmp_path: Path, changed: dict) -> None:
+    case = tmp_path / "bound-arguments"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    wire = _spawn(case, db, "server")
+    args = _args("bound-arguments")
+    try:
+        token = _round_one(wire, args)
+        with pytest.raises(WireError):
+            _commit(wire, {**args, **changed}, token, req_id=11)
+        with closing(IssueStore(str(db), backend_id=BACKEND)) as store:
+            assert store.count() == store.operation_count() == 0
+        assert _structured(_commit(wire, args, token, req_id=12))["replayed"] is False
+    finally:
+        _close(wire)
+
+
+def test_guarded_does_not_reissue_after_authority_expiry(tmp_path: Path) -> None:
+    case = tmp_path / "expired-reissue"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    first = _spawn(case, db, "first", authority_ttl=60)
+    args = _args("expired-reissue")
+    try:
+        token = _round_one(first, args)
+    finally:
+        _close(first)
+    later = _spawn(case, db, "later", clock=T0 + 120, authority_ttl=60)
+    try:
+        with pytest.raises(WireError, match="operation_authority_expired"):
+            later.request(
+                "tools/call",
+                {
+                    "name": "create_guarded_issue",
+                    "arguments": args,
+                    "requestState": token,
+                    "inputResponses": {"other": {"action": "accept"}},
+                },
+                11,
+            )
+        with closing(IssueStore(str(db), backend_id=BACKEND)) as store:
+            assert store.count() == store.operation_count() == 0
+    finally:
+        _close(later)
+
+
+def _record(
+    case_id: str, facts: dict[str, Any], paths: list[str | Path], exit_codes: list[int]
+) -> None:
     target = os.environ.get("MATRIX_EVIDENCE_JSONL")
     if target is None:
         return

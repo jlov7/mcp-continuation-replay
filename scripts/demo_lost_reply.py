@@ -77,6 +77,7 @@ def main() -> None:
                 "authoritative",
                 "freshWriteAuthorized",
                 "matchingIds",
+                "storedResult",
             )
         },
         "replay": {key: replay[0][key] for key in ("operationId", "effectId", "replayed", "state")},

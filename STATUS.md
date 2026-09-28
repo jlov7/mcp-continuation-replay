@@ -2,7 +2,29 @@
 
 This repository is a research software preview. Its local synthetic checks and
 retained evidence are described below; they do not establish production
-reliability, independent replication, or hosted CI results for this revision.
+reliability or independent replication. [Hosted CI succeeded for public commit
+`1a95c85`](https://github.com/jlov7/mcp-continuation-replay/actions/runs/36050153362).
+That result applies to that commit, not to later source changes.
+
+## Current source review, 2026-09-28
+
+An independent read-only Claude Opus 5.5 review identified a TypeScript v2
+continuation binding error that was reproduced on the wire: changing the title
+after elicitation committed the changed title. This source branch binds title
+and mode into the signed state and rejects a mismatch before dispatch. It also
+normalizes unrelated input-response fields and trace metadata, reissues a
+missing required body request, makes orphaned status fail closed without a
+stored result, and strengthens status and fingerprint regression checks. The
+historical frozen matrix and its source snapshots remain unchanged. Results
+for the current source must be stated with its own gate and commit.
+
+On macOS Python 3.13.15 with Node 22.23.2, the current source passed
+`pytest --verify-pinned-findings tests typescript_v2_tests` with 185 tests and
+88.44% combined coverage. Ruff, pyright, the lock check, 11 legacy TypeScript
+tests, wheel and source build, 102 source-archive SQLite snapshot checks, and
+the runnable lost-reply demo also passed locally. These are source-checkout
+results. Check [Actions](https://github.com/jlov7/mcp-continuation-replay/actions)
+for a hosted result on the exact revision you use.
 
 ## Local checkpoint, 2026-09-24
 
@@ -109,9 +131,10 @@ locked to `@modelcontextprotocol/server@2.0.0`, `core@2.0.0`, and `zod@4.6.5`.
 Its real SDK stdio server passed the twelve semantic cases through a narrow
 Python subprocess bridge to the **same** SQLite `IssueStore`. This tests SDK
 wire handling and that integration; it is not independent storage validation.
-The TypeScript state codec signs synthetic state without encrypting it. Its
-fixture accepts only the declared body response shape and rejects extra fields
-before an effect.
+The TypeScript state codec signs synthetic state without encrypting it. The
+current fixture binds the elicited title and mode, uses the declared body
+response, and ignores unrelated response fields. Historical strict-response
+behavior remains recorded in the frozen machinery attempts.
 
 The [native verification record](docs/research-completion-2026-09-22/verification/RESULT.md)
 retains logs for 94 combined Python/v2 tests passing at 86.86% coverage, above

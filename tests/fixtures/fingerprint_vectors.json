@@ -1,5 +1,10 @@
 {
-  "_header": "Shared cross-language fingerprint vectors. One entry per discriminating case, expressed as a canonical LogicalRequest. Both adapters must produce byte-identical fingerprints for every name. Vector 00 is the agreed control. Vectors 01/08/09 are the SAME logical operation (so their fingerprints must coincide); 04/06/11 differ materially (so theirs must differ).",
+  "_header": "Shared cross-language fingerprint vectors. Both adapters must produce byte-identical fingerprints for every name. Vectors 01/08 are the same logical operation; 09 has different continuation state. Vectors 04/06/11 differ materially from 01. The Unicode vector uses U+E000 and U+10000 keys to distinguish scalar order from UTF-16 order.",
+  "expected_fingerprints": {
+    "01_identical_retry": "ee4f94fa05dcf57deaddf3e31dc6d606b3662fac3c55d1f04565816f36abb757",
+    "04_changed_input_responses": "356c004404c208575a013d6435135f63c9428eb39ed48af395f7d1676fffb160",
+    "unicode_scalar_order_and_utf8": "23d2997fbce44abe4aa527712031a68044176844fb04f3c713b4097ba9c70f4e"
+  },
   "vectors": [
     {
       "name": "00_control_single_round",

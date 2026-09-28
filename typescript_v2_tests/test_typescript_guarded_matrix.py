@@ -57,7 +57,10 @@ def _spawn(
     fault: str = "",
 ) -> RawStdioClient:
     node_modules = os.environ.get("TS_V2_NODE_MODULES")
-    if not node_modules or not (Path(node_modules) / "@modelcontextprotocol/server/package.json").is_file():
+    if (
+        not node_modules
+        or not (Path(node_modules) / "@modelcontextprotocol/server/package.json").is_file()
+    ):
         raise RuntimeError("TS_V2_NODE_MODULES must identify the isolated installed v2 packages")
     env = {
         "WIRE_PRINCIPAL": principal,
@@ -117,7 +120,7 @@ def _extend_record(path: Path, code: int) -> None:
 
 
 @pytest.mark.parametrize(
-    "extra",
+    "responses",
     [
         {"body": {"action": "accept", "content": {"body": "alpha", "other": "value"}}},
         {"body": {"action": "accept", "content": {"body": "alpha"}, "other": "value"}},
@@ -125,7 +128,7 @@ def _extend_record(path: Path, code: int) -> None:
         {"body": {"action": "accept", "content": {"body": "alpha"}}, "other": {"action": "accept"}},
     ],
 )
-def test_extra_accepted_response_fields_rejected_before_effect(tmp_path: Path, extra: dict) -> None:
+def test_ts_ignores_unexpected_response_fields(tmp_path: Path, responses: dict) -> None:
     case = tmp_path / "response-shape"
     case.mkdir()
     db = case / "store.sqlite3"
@@ -133,29 +136,99 @@ def test_extra_accepted_response_fields_rejected_before_effect(tmp_path: Path, e
     args = semantic._args("shape")
     try:
         token = semantic._round_one(wire, args)
-        with pytest.raises(WireError):
+        first = semantic._structured(
             wire.request(
                 "tools/call",
-                {"name": "create_guarded_issue", "arguments": args, "requestState": token, "inputResponses": extra},
+                {
+                    "name": "create_guarded_issue",
+                    "arguments": args,
+                    "requestState": token,
+                    "inputResponses": responses,
+                },
                 11,
             )
+        )
+        replay = semantic._structured(semantic._commit(wire, args, token, req_id=12))
+        assert first["replayed"] is False and replay["replayed"] is True
+        assert replay["result"] == first["result"]
         with closing(sqlite3.connect(db)) as conn:
-            assert conn.execute("SELECT count(*) FROM issues").fetchone() == (0,)
-            assert conn.execute("SELECT count(*) FROM operations").fetchone() == (0,)
-        accepted = semantic._structured(semantic._commit(wire, args, token, req_id=12))
-        assert accepted["replayed"] is False
+            assert conn.execute("SELECT count(*) FROM issues").fetchone() == (1,)
+            assert conn.execute("SELECT count(*) FROM operations").fetchone() == (1,)
     finally:
         semantic._close(wire)
 
 
+def test_ts_reissues_missing_required_response(tmp_path: Path) -> None:
+    case = tmp_path / "missing-body"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    wire = _spawn(case, db, "server")
+    args = semantic._args("missing-body")
+    try:
+        token = semantic._round_one(wire, args)
+        again = wire.request(
+            "tools/call",
+            {
+                "name": "create_guarded_issue",
+                "arguments": args,
+                "requestState": token,
+                "inputResponses": {"other": {"action": "accept"}},
+            },
+            11,
+        )
+        assert again["resultType"] == "input_required"
+        with closing(sqlite3.connect(db)) as conn:
+            assert conn.execute("SELECT count(*) FROM issues").fetchone() == (0,)
+            assert conn.execute("SELECT count(*) FROM operations").fetchone() == (0,)
+        second_token = again["requestState"]
+        assert isinstance(second_token, str)
+        assert (
+            semantic._structured(semantic._commit(wire, args, second_token, req_id=12))["replayed"]
+            is False
+        )
+    finally:
+        semantic._close(wire)
+
+
+def test_ts_does_not_reissue_after_authority_expiry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _run(monkeypatch, semantic.test_guarded_does_not_reissue_after_authority_expiry, tmp_path)
+
+
 def test_bridge_rejects_boolean_request_state_version() -> None:
     state = {
-        "v": True, "operation_id": "case-shape", "nonce": "synthetic",
-        "issued_at": semantic.T0, "authority_expires_at": semantic.T0 + 300,
+        "v": True,
+        "operation_id": "case-shape",
+        "title": "shape",
+        "mode": "atomic",
+        "nonce": "synthetic",
+        "issued_at": semantic.T0,
+        "authority_expires_at": semantic.T0 + 300,
         "replay_expires_at": semantic.T0 + 360,
     }
     with pytest.raises(ValueError, match="requestState"):
-        _state(state, "case-shape", semantic.T0)
+        _state(state, "case-shape", "shape", "atomic", semantic.T0)
+
+
+@pytest.mark.parametrize("changed", [{"title": "changed"}, {"mode": "partial"}])
+def test_continuation_cannot_change_signed_arguments(tmp_path: Path, changed: dict) -> None:
+    case = tmp_path / "bound-arguments"
+    case.mkdir()
+    db = case / "store.sqlite3"
+    wire = _spawn(case, db, "server")
+    args = semantic._args("bound-arguments")
+    try:
+        token = semantic._round_one(wire, args)
+        with pytest.raises(WireError, match="requestState arguments mismatch"):
+            semantic._commit(wire, {**args, **changed}, token, req_id=11)
+        with closing(sqlite3.connect(db)) as conn:
+            assert conn.execute("SELECT count(*) FROM issues").fetchone() == (0,)
+            assert conn.execute("SELECT count(*) FROM operations").fetchone() == (0,)
+        result = semantic._structured(semantic._commit(wire, args, token, req_id=12))
+        assert result["replayed"] is False
+    finally:
+        semantic._close(wire)
 
 
 def test_guarded_ts_case_01(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -178,7 +251,11 @@ def test_guarded_ts_case_02(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_guarded_ts_case_03(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_03_lost_reply_explicit_replay_is_one_effect, tmp_path)
+    _run(
+        monkeypatch,
+        semantic.test_guarded_case_03_lost_reply_explicit_replay_is_one_effect,
+        tmp_path,
+    )
 
 
 def test_guarded_ts_case_04(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -196,7 +273,9 @@ def test_guarded_ts_case_06(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
     try:
         identity = OperationIdentity("case-06", "alice", semantic.BACKEND)
         result = bob.request(
-            "tools/call", {"name": "get_operation_status", "arguments": {"operation_id": "case-06"}}, 21
+            "tools/call",
+            {"name": "get_operation_status", "arguments": {"operation_id": "case-06"}},
+            21,
         )
         status = semantic._structured(result)
         assert status["principal"] == "bob" and status["state"] == "unknown"
@@ -208,11 +287,19 @@ def test_guarded_ts_case_06(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_guarded_ts_case_07(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_07_expired_authority_rejects_write_but_allows_readback, tmp_path)
+    _run(
+        monkeypatch,
+        semantic.test_guarded_case_07_expired_authority_rejects_write_but_allows_readback,
+        tmp_path,
+    )
 
 
 def test_guarded_ts_case_08(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_08_independent_processes_serialize_identical_attempts, tmp_path)
+    _run(
+        monkeypatch,
+        semantic.test_guarded_case_08_independent_processes_serialize_identical_attempts,
+        tmp_path,
+    )
 
 
 def test_guarded_ts_case_09(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -220,15 +307,25 @@ def test_guarded_ts_case_09(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_guarded_ts_case_10(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_10_retention_and_sdk_expiry_keep_tombstone, tmp_path)
+    _run(
+        monkeypatch, semantic.test_guarded_case_10_retention_and_sdk_expiry_keep_tombstone, tmp_path
+    )
 
 
 def test_guarded_ts_case_11(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_11_stripped_state_is_unsupported_not_new_operation, tmp_path)
+    _run(
+        monkeypatch,
+        semantic.test_guarded_case_11_stripped_state_is_unsupported_not_new_operation,
+        tmp_path,
+    )
 
 
 def test_guarded_ts_case_12(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _run(monkeypatch, semantic.test_guarded_case_12_partial_and_failed_compensation_are_durable, tmp_path)
+    _run(
+        monkeypatch,
+        semantic.test_guarded_case_12_partial_and_failed_compensation_are_durable,
+        tmp_path,
+    )
     case, db = _case(tmp_path, "12")
     wire = _spawn(case, db, "readback")
     try:

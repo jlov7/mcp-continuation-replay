@@ -8,7 +8,7 @@ ONE identity no matter which language computes it.
 This is cross-implementation testing, NOT independent validation — both files
 are written by the same author. The README states this plainly.
 
-Vectors 01/08/09 encode the SAME logical operation and MUST coincide; vectors
+Vectors 01/08 encode the SAME logical operation and MUST coincide; vectors
 04/06/11 differ materially and MUST NOT collide. Those assertions make the
 digest meaningful, not just equal.
 """
@@ -94,6 +94,8 @@ def test_every_shared_vector_fingerprints_identically_across_languages() -> None
         assert py[name] == ts[name], (
             f"fingerprint divergence on {name}: python={py[name]} ts={ts[name]}"
         )
+    for name, expected in data["expected_fingerprints"].items():
+        assert py[name] == ts[name] == expected
 
 
 def test_identical_logical_operations_coincide() -> None:
