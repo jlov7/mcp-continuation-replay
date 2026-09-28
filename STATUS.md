@@ -23,7 +23,8 @@ On macOS Python 3.13.15 with Node 22.23.2, the current source passed
 88.44% combined coverage. Ruff, pyright, the lock check, 11 legacy TypeScript
 tests, wheel and source build, 102 source-archive SQLite snapshot checks, and
 the runnable lost-reply demo also passed locally. These are source-checkout
-results; hosted CI for this change is not yet observed.
+results. Check [Actions](https://github.com/jlov7/mcp-continuation-replay/actions)
+for a hosted result on the exact revision you use.
 
 ## Local checkpoint, 2026-09-24
 
