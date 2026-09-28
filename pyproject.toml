@@ -1,7 +1,7 @@
 [project]
 name = "mcp-continuation-replay"
 version = "0.0.1"
-description = "Wire-level experimental profile and reference consumer for MCP continuation replay and uncertain effects."
+description = "Reference implementation and tests for MCP continuation replay after lost replies."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Jason Lovell" }]

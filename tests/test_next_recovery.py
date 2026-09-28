@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from contextlib import closing
 from dataclasses import replace
 from pathlib import Path
@@ -60,6 +61,28 @@ def test_status_only_recovers_durable_result_without_redispatch(tmp_path: Path) 
     assert [r["params"]["name"] for r in requests if r.get("method") == "tools/call"] == [
         "get_operation_status"
     ]
+
+
+def test_orphaned_effect_status_stops_without_stored_result(tmp_path: Path) -> None:
+    db = tmp_path / "store.sqlite3"
+    identity = OperationIdentity("orphan", "alice", BACKEND)
+    with closing(IssueStore(str(db), backend_id=BACKEND)) as store:
+        applied = store.apply_issue_once(
+            identity, request_fingerprint="fingerprint", title="t", body="b"
+        )
+    with closing(sqlite3.connect(db)) as conn:
+        conn.execute("PRAGMA foreign_keys = OFF")
+        conn.execute("DELETE FROM issues WHERE id = ?", (applied.effect_id,))
+        conn.commit()
+    wire = _spawn(tmp_path, db, "orphan")
+    try:
+        status = _status(wire, identity, 10)
+        observed = observation_from_wire(status, expected_identity=identity)
+        recovery = ContinuationConsumer(identity).reconcile(lambda _: observed)
+        assert status["storedResult"] is None
+        assert recovery.effect == "unknown" and recovery.action == "stop"
+    finally:
+        wire.close()
 
 
 def test_partial_first_commit_crash_keeps_unresolved_effect(tmp_path: Path) -> None:

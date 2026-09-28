@@ -196,7 +196,9 @@ class ReadBack:
             state=state,
             matching_ids=ids,
             detail=detail,
-            stored_result=record.result if record is not None else None,
+            stored_result=record.result
+            if record is not None and state in {"applied", "partial"}
+            else None,
             scope_binding=identity,
         )
 

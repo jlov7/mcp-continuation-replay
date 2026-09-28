@@ -58,8 +58,11 @@ def test_wire_recovery_rejects_malformed_authoritative_status(field: str, bad: o
         "matchingIds": [1],
         "observedAt": "2026-09-22T12:00:00+00:00",
         "scope": "exact operation",
+        "scopeBinding": {"operationId": "op", "principal": "alice", "backend": "backend"},
+        "storedResult": "created 1",
         "detail": "one issue",
     }
+    assert observation_from_wire(status, expected_identity=identity).state == "applied"
     status[field] = bad
     with pytest.raises(ValueError):
         observation_from_wire(status, expected_identity=identity)
@@ -69,13 +72,18 @@ def test_readback_does_not_call_orphaned_ledger_applied() -> None:
     store = IssueStore(":memory:")
     identity = OperationIdentity("orphan", "alice", store.backend_id)
     try:
-        applied = store.apply_issue_once(identity, request_fingerprint="fingerprint", title="t", body="b")
+        applied = store.apply_issue_once(
+            identity, request_fingerprint="fingerprint", title="t", body="b"
+        )
         assert ReadBack(store, principal="alice").reconcile_operation(identity).state == "applied"
         store._conn.execute("PRAGMA foreign_keys = OFF")
         store._conn.execute("DELETE FROM issues WHERE id = ?", (applied.effect_id,))
         store._conn.commit()
         observed = ReadBack(store, principal="alice").reconcile_operation(identity)
         assert observed.state == "unknown" and observed.matching_ids == ()
+        assert observed.stored_result is None
+        recovery = ContinuationConsumer(identity).reconcile(lambda _: observed)
+        assert recovery.action == "stop" and recovery.stored_result is None
     finally:
         store.close()
 
@@ -352,8 +360,12 @@ def test_simultaneous_first_use_serializes_schema_and_binding(tmp_path) -> None:
         for future in futures:
             future.result(timeout=10)
     with closing(sqlite3.connect(path)) as conn:
-        assert conn.execute("SELECT value FROM store_metadata WHERE key='backend_id'").fetchone() == ("sqlite:shared",)
-        assert conn.execute("SELECT name FROM sqlite_master WHERE name='operations'").fetchone() == ("operations",)
+        assert conn.execute(
+            "SELECT value FROM store_metadata WHERE key='backend_id'"
+        ).fetchone() == ("sqlite:shared",)
+        assert conn.execute(
+            "SELECT name FROM sqlite_master WHERE name='operations'"
+        ).fetchone() == ("operations",)
 
 
 def test_simultaneous_conflicting_backend_ids_rejects_loser(tmp_path) -> None:
@@ -377,7 +389,9 @@ def test_simultaneous_conflicting_backend_ids_rejects_loser(tmp_path) -> None:
     assert {outcome for outcome, _ in outcomes} == {"accepted", "rejected"}
     accepted = next(backend_id for outcome, backend_id in outcomes if outcome == "accepted")
     with closing(sqlite3.connect(path)) as conn:
-        assert conn.execute("SELECT value FROM store_metadata WHERE key='backend_id'").fetchone() == (accepted,)
+        assert conn.execute(
+            "SELECT value FROM store_metadata WHERE key='backend_id'"
+        ).fetchone() == (accepted,)
     reopened = IssueStore(str(path), backend_id=accepted)
     reopened.close()
 

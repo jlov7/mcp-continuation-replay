@@ -140,31 +140,27 @@ def _ask(title: str) -> ElicitRequest:
     )
 
 
-def _accepted_body(responses: object) -> tuple[str, dict[str, Any]]:
-    if not isinstance(responses, dict) or set(responses) != {"body"}:
-        raise MCPError(code=INVALID_PARAMS, message="unsupported input response fields")
-    resp = responses["body"]
+def _accepted_body(responses: object) -> tuple[str, dict[str, Any]] | None:
+    if not isinstance(responses, dict):
+        raise MCPError(code=INVALID_PARAMS, message="invalid input responses")
+    resp = responses.get("body")
     if resp is None:
-        raise MCPError(code=INVALID_PARAMS, message="missing body input response")
+        return None
     if hasattr(resp, "model_dump"):
         resp = resp.model_dump(by_alias=True, exclude_none=False)
-    if not isinstance(resp, dict) or set(resp) != {"action", "content", "_meta"}:
-        fields = sorted(resp) if isinstance(resp, dict) else [type(resp).__name__]
-        raise MCPError(code=INVALID_PARAMS, message=f"unsupported body response fields: {fields!r}")
+    if not isinstance(resp, dict):
+        raise MCPError(code=INVALID_PARAMS, message="invalid body response")
     action = resp.get("action")
     action = getattr(action, "value", action)
     content = resp.get("content")
-    meta = resp.get("_meta")
     if (
         action != "accept"
         or not isinstance(content, dict)
-        or set(content) != {"body"}
         or not isinstance(content.get("body"), str)
-        or (meta is not None and not isinstance(meta, dict))
     ):
         raise MCPError(code=INVALID_PARAMS, message="body response must be accepted text")
     body = str(content["body"])
-    return body, {"body": {"_meta": meta, "action": "accept", "content": {"body": body}}}
+    return body, {"body": {"_meta": None, "action": "accept", "content": {"body": body}}}
 
 
 def _parse_state(raw: str, operation_id: str) -> dict[str, Any]:
@@ -242,7 +238,6 @@ def build_server(
             now=lambda: datetime.fromtimestamp(settings.now_epoch, UTC),
         )
         observation = readback.reconcile_operation(identity)
-        record = store.operation_record(identity)
         return {
             "operationId": identity.operation_id,
             "principal": identity.principal,
@@ -259,7 +254,7 @@ def build_server(
             "state": observation.state,
             "matchingIds": list(observation.matching_ids),
             "detail": observation.detail,
-            "storedResult": record.result if record is not None else None,
+            "storedResult": observation.stored_result,
         }
 
     @mcp.tool(name=TOOL_ID)
@@ -294,7 +289,14 @@ def build_server(
                 message="unsupported continuation: input responses require requestState",
             )
         state = _parse_state(ctx.request_state, operation_id)
-        body, normalized_responses = _accepted_body(ctx.input_responses)
+        accepted = _accepted_body(ctx.input_responses)
+        if accepted is None:
+            if settings.now_epoch >= float(state["authority_expires_at"]):
+                raise MCPError(code=INVALID_PARAMS, message="operation_authority_expired")
+            return InputRequiredResult(
+                input_requests={"body": _ask(title)}, request_state=ctx.request_state
+            )
+        body, normalized_responses = accepted
         request_fingerprint = fingerprint(
             LogicalRequest(
                 principal=principal(),

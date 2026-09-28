@@ -58,7 +58,8 @@ The script starts the guarded Python SDK stdio fixture, executes the frozen case
     "state": "applied",
     "authoritative": true,
     "freshWriteAuthorized": false,
-    "matchingIds": [1]
+    "matchingIds": [1],
+    "storedResult": "created 1"
   },
   "replay": {"operationId": "case-03", "effectId": 1, "replayed": true, "state": "applied"},
   "physical_issue_rows": 1,
@@ -87,7 +88,7 @@ The [case-03 demo](scripts/demo_lost_reply.py) performs one additional exact rep
 
 | Component | Responsibility |
 |---|---|
-| Pinned SDK and [guarded Python stdio server](reference/guarded_server_stdio.py) | Carry the MRTR request and signed continuation state; accept only declared response fields; obtain trusted fixture principal and backend configuration. |
+| Pinned SDK and [guarded Python stdio server](reference/guarded_server_stdio.py) | Carry the MRTR request and signed continuation state; use the declared body response while ignoring unrelated fields; obtain trusted fixture principal and backend configuration. |
 | [Fingerprint contract](src/continuation_replay/fingerprint.py) | Canonicalize the logical request and bind continuation state and input responses with a caller-supplied HMAC key. The [TypeScript adapter](adapters/typescript/src/fingerprint.ts) shares test vectors. |
 | [SQLite issue store](reference/backend.py) | Bind operation identity to a fingerprint, write the issue and ledger atomically, return a stored result on an exact retry, and retain expiration boundaries. |
 | [Read-back](reference/readback.py) and [consumer](reference/consumer.py) | Produce and evaluate an identity-bound status observation. A transport error alone never becomes `not_applied`. |
@@ -103,6 +104,8 @@ The [architecture document](docs/ARCHITECTURE.md) describes the trust boundaries
 
 **Authority and retention are separate.** The server checks whether the continuation is still authorized and whether its existing operation record remains replayable. An expired retained identity is rejected rather than silently treated as new work. Status reads never authorize a fresh write. A compensating action has its own outcome and does not erase a partial original effect. These behaviors are exercised by the [guarded wire cases](tests/test_guarded_wire_matrix.py).
 
+After authority expires, even an exact continuation replay is refused; read-only status can still recover a retained result. Operation IDs in this synthetic store occupy a shared namespace across principals, so integrations must choose unguessable IDs and review that boundary before using a real identity system. Both SDKs reject invalid signed state through JSON-RPC; application-level rejections use JSON-RPC errors in Python and tool errors in TypeScript v2. The fixtures also differ on defaulted or unknown tool arguments. The twelve-case comparison checks shared outcomes, not identical wire behavior.
+
 **Read-back settles what transport cannot.** An applied status needs the exact operation ledger, the physical issue row, a matching structured scope, and a stored result consistent with the effect ID. A partial outcome stays partial. An unfinished or absent ledger stays unknown. The reference consumer also requires an observation time, but does not use it as a blanket freshness cutoff: an older immutable terminal record can still be valid.
 
 The SQLite transaction is the relevant atomic boundary here. An external side effect would require its own reliable boundary and recovery model. The reference does not establish exactly-once effects across arbitrary systems.
@@ -113,7 +116,9 @@ The original pinned `mcp==2.2.0` unguarded server deliberately has no redemption
 
 In a retained local run, the guarded Python stdio fixture passed [12 frozen cases](docs/research-completion-2026-09-22/raw/attempt-20260922T220129Z-1790114489061895000/SUMMARY.json). They include lost reply, changed input, stripped state, concurrency, read-only recovery, expiry, and partial effect. A separately frozen [TypeScript v2 attempt](docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T220151Z-1790114511892918000/SUMMARY.json) passed the same twelve semantic cases. Its Python bridge uses the same SQLite backend, so the two runs compare SDK wire behavior and integration; they are not independent storage implementations or third-party replication. The older `@modelcontextprotocol/sdk@1.30.0` adapter is fingerprint-only and does not exercise that MRTR surface.
 
-The [current findings](research/CURRENT-FINDINGS.md) distinguish the normative server duty from these observations. [Limitations](research/LIMITATIONS.md) and [security assumptions](SECURITY-AND-ASSUMPTIONS.md) describe what is unproven: real authentication, arbitrary backends, general exactly-once effects, and independent validation. The [fault lab](docs/FAULT-LAB.md) and newer transport checks test additional local failure paths without widening the frozen study. The reported results come from local runs. Check [Actions](https://github.com/jlov7/mcp-continuation-replay/actions) for hosted results on a particular commit; independent replication is not established here.
+The [current findings](research/CURRENT-FINDINGS.md) distinguish the normative server duty from these observations. [Limitations](research/LIMITATIONS.md) and [security assumptions](SECURITY-AND-ASSUMPTIONS.md) describe what is unproven: real authentication, arbitrary backends, general exactly-once effects, and independent validation. The [fault lab](docs/FAULT-LAB.md) and newer transport checks test additional local failure paths without widening the frozen study. The study results come from local runs. [Hosted CI passed for public commit `1a95c85`](https://github.com/jlov7/mcp-continuation-replay/actions/runs/36050153362); check [Actions](https://github.com/jlov7/mcp-continuation-replay/actions) for results on later commits. Independent replication is not established here.
+
+The [MCP Tasks extension draft](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks) covers a related path when the client receives a server-assigned task ID. This example focuses on the case where the response carrying that ID could be lost. [Related work](research/RELATED_WORK.md) compares the two without claiming a standards gap has been accepted upstream.
 
 ## If the demo does not match
 

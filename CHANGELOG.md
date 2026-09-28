@@ -7,7 +7,17 @@ source commit and distributed archive digest. Pinned research observations and
 their raw evidence are retained; new experiments use new protocol/attempt
 paths. A later SDK result never rewrites an earlier pinned witness.
 
-## Unreleased public-readiness candidate — 2026-09-23
+## Unreleased
+
+- Bind TypeScript v2 continuation state to the elicited title and mode.
+- Ignore unrelated input-response fields and reissue a missing body request in
+  both guarded fixtures until the original authority deadline; exclude trace
+  metadata from effect equivalence.
+- Return no stored result for an orphaned effect, and add wire, status and
+  fixed-digest regression checks.
+- Clarify Tasks, SDK error-channel differences and historical CI scope.
+
+## Public-readiness work — 2026-09-23
 
 - Added a self-contained public source export builder/verifier and public
   custody instructions for five disclosed redacted derivatives.
@@ -15,8 +25,9 @@ paths. A later SDK result never rewrites an earlier pinned witness.
   assumptions and an additive precommit/SQLite-busy regression lab.
 - Hardened candidate CI with action commit pins, restricted token permissions,
   format/type/test/build/evidence gates and a clean public export check.
-- Added support, citation and security-reporting metadata. Hosted candidate
-  checks and public distribution are pending separate authorization.
+- Added support, citation and security-reporting metadata. Public distribution
+  and hosted CI followed in later commits; this section records the earlier
+  source increment.
 
 ## 0.0.1 — 2026-09-22 local research artifact
 

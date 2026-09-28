@@ -25,7 +25,8 @@ The trusted server supplies principal and backend identity; user-controlled wire
 | Case | Mechanism under test | What settles it |
 |---|---|---|
 | 03 | Commit, then server exit before reply | Same-identity status and stored-result replay; one physical issue row |
-| 04–05 | Changed inputs or stripped state | Conflict or rejection before a new effect |
+| 04–05 | Changed input responses or changed valid request state | Conflict before a new effect |
+| 06 and 11 | Different principal or stripped state | Identity-bound rejection before a new effect |
 | 07 and 10 | Authority and retention expiry | Separate rejection at each boundary |
 | 08 | Concurrent first use | One first apply and one replay |
 | 09 | Crash recovery without redispatch | Read-only operation status |
