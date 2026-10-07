@@ -118,7 +118,7 @@ In a retained local run, the guarded Python stdio fixture passed [12 frozen case
 
 The [current findings](research/CURRENT-FINDINGS.md) distinguish the normative server duty from these observations. [Limitations](research/LIMITATIONS.md) and [security assumptions](SECURITY-AND-ASSUMPTIONS.md) describe what is unproven: real authentication, arbitrary backends, general exactly-once effects, and independent validation. The [fault lab](docs/FAULT-LAB.md) and newer transport checks test additional local failure paths without widening the frozen study. The study results come from local runs. [Hosted CI passed for public commit `1a95c85`](https://github.com/jlov7/mcp-continuation-replay/actions/runs/36050153362); check [Actions](https://github.com/jlov7/mcp-continuation-replay/actions) for results on later commits. Independent replication is not established here.
 
-The [MCP Tasks extension draft](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks) covers a related path when the client receives a server-assigned task ID. This example focuses on the case where the response carrying that ID could be lost. [Related work](research/RELATED_WORK.md) compares the two without claiming a standards gap has been accepted upstream.
+The [MCP Tasks extension (2026-07-28)](https://tasks.extensions.modelcontextprotocol.io/specification/2026-07-28/tasks) covers a related path when the client receives a server-assigned task ID. This example focuses on the case where the response carrying that ID could be lost. [Related work](research/RELATED_WORK.md) compares the two without claiming a standards gap has been accepted upstream.
 
 ## If the demo does not match
 

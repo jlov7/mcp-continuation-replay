@@ -1,12 +1,13 @@
 # Related work and scope
 
 Selected primary-source reading checked through 2026-09-28, not a systematic literature
-review. See [current findings](CURRENT-FINDINGS.md) for this project's interpretation.
+review. The Tasks reference was rechecked on 2026-10-07. See
+[current findings](CURRENT-FINDINGS.md) for this project's interpretation.
 
 | Work | Relevant scope | Boundary of this artifact |
 |---|---|---|
 | [MCP 2026-07-28 MRTR pattern](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr) | Defines multi-round requests and explicitly says request-state binding does not guarantee single use; servers needing at-most-once behavior must enforce it. | The reference ledger demonstrates one narrow server-side implementation under SQLite assumptions. |
-| [MCP Tasks extension draft](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks) | A server assigns a durable task ID before returning `CreateTaskResult`; the draft says MRTR should resolve before task creation. | Tasks support later lookup when the client receives the ID. If that response is lost, this fixture's client-chosen operation ID and read-only status route address a different recovery gap. The draft is not a general exactly-once guarantee. |
+| [MCP Tasks extension (2026-07-28)](https://tasks.extensions.modelcontextprotocol.io/specification/2026-07-28/tasks) | A server assigns a durable task ID before returning `CreateTaskResult`; the specification says MRTR should resolve before task creation. | Tasks support later lookup when the client receives the ID. If that response is lost, this fixture's client-chosen operation ID and read-only status route address a different recovery gap. The extension is not a general exactly-once guarantee. |
 | [AAI Foundation `requestState` design note](https://aaif.io/blog/designing-requeststate-for-multi-round-trip-requests) (2026-08-12) | Separates integrity binding from replay policy and describes nonce/redemption with durable state. | Explains why the pinned unmediated probe needs an application mechanism for at-most-once effects. |
 | [MCP PR #3182, Request Idempotency](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/3182) | Proposed a separate idempotency mechanism and explicitly excluded MRTR continuation equivalence. Closed 2026-08-23. | The witness vectors cover that excluded interaction but do not make it an SDK defect. |
 | [MCP PR #3312, structured tool failure](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/3312) | Drafts failure classification and retry guidance. Open at the check date. | A reported failure still does not prove backend state. |
