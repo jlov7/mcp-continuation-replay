@@ -28,12 +28,14 @@ from scripts.verify_public_export import (
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = "MCP Continuation Replay"
 HOME_PATTERN = re.compile(rb"/Users/[^\s\x27\x22]+")
-PYTEST_PATTERN = re.compile(rb"pytest-of-[A-Za-z0-9._-]+")
+PYTEST_PATTERN = re.compile(rb"/(?:private/)?var/folders/[^\s\x27\x22)]+")
+BUILD_TEMP_PATTERN = re.compile(rb"/(?:private/)?tmp/[^\s\x27\x22<>)]+")
 REDACTIONS = {
     "artifacts/evidence/wire-replay-run.txt": "home",
     "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184055Z-1790102455601597000/case-08.pytest.stdout.log": "pytest",
     "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184055Z-1790102455601597000/results.jsonl": "home",
-    "docs/research-completion-2026-09-22/verification/fresh-install.log": "home",
+    "docs/research-completion-2026-09-22/verification/fresh-install.log": "home-and-build",
+    "docs/research-completion-2026-09-22/verification/package-build.log": "build",
     "docs/research-completion-2026-09-22/verification/native-python-and-v2.log": "home",
 }
 assert set(REDACTIONS) == DERIVATIVE_PATHS
@@ -44,7 +46,7 @@ def _sha256(data: bytes) -> str:
 
 
 def detect_source_kind(root: Path = ROOT) -> str:
-    """Classify only by the five approved derivative bytes, never by Git history."""
+    """Classify only by the approved derivative bytes, never by Git history."""
     matched = [
         _sha256((root / name).read_bytes()) == hashes[0]
         for name, hashes in PUBLIC_DERIVATIVE_PROVENANCE.items()
@@ -129,20 +131,45 @@ def _redact(name: str, source: bytes) -> tuple[bytes, list[dict[str, object]]]:
     kind = REDACTIONS.get(name)
     if kind is None:
         return source, []
-    pattern, replacement, label, prefix = (
-        (HOME_PATTERN, b"<REDACTED_HOME>", "absolute_home_path_to_<REDACTED_HOME>", "/Users/<user>")
-        if kind == "home"
-        else (
-            PYTEST_PATTERN,
-            b"pytest-of-<REDACTED_USER>",
-            "pytest_temp_username_to_<REDACTED_USER>",
-            "pytest-of-<user>",
+    transformed = source
+    transforms: list[dict[str, object]] = []
+    if kind in {"home", "home-and-build"}:
+        transformed, count = HOME_PATTERN.subn(b"<REDACTED_HOME>", transformed)
+        if count == 0:
+            raise ValueError(f"expected home path for redaction absent: {name}")
+        transforms.append(
+            {
+                "matched_prefix": "/Users/<user>",
+                "occurrences": count,
+                "transform": "absolute_home_path_to_<REDACTED_HOME>",
+            }
         )
-    )
-    transformed, count = pattern.subn(replacement, source)
-    if count == 0 or transformed == source:
-        raise ValueError(f"expected private path for redaction absent: {name}")
-    return transformed, [{"matched_prefix": prefix, "occurrences": count, "transform": label}]
+    if kind == "pytest":
+        transformed, count = PYTEST_PATTERN.subn(b"<REDACTED_TEMP>", transformed)
+        if count == 0:
+            raise ValueError(f"expected temporary path for redaction absent: {name}")
+        transforms.append(
+            {
+                "matched_prefix": "/<temporary-directory>",
+                "occurrences": count,
+                "transform": "pytest_temp_path_to_<REDACTED_TEMP>",
+            }
+        )
+    if kind in {"build", "home-and-build"}:
+        transformed, count = BUILD_TEMP_PATTERN.subn(
+            lambda match: b"<REDACTED_BUILD_DIR>/" + match.group(0).rsplit(b"/", 1)[1],
+            transformed,
+        )
+        if count == 0:
+            raise ValueError(f"expected build path for redaction absent: {name}")
+        transforms.append(
+            {
+                "matched_prefix": "/<build-directory>",
+                "occurrences": count,
+                "transform": "build_temp_directory_to_<REDACTED_BUILD_DIR>",
+            }
+        )
+    return transformed, transforms
 
 
 def _private_origin_commit(prior: bytes | None) -> str | None:
@@ -274,9 +301,9 @@ def build(destination: Path, *, already_public: bool = False) -> dict[str, str |
         "omitted_file_count": len(omissions),
         "omissions": omissions,
         "privacy_contract": (
-            "Public Git tree contains five already-redacted historical derivatives; their private originals remain unavailable."
+            "Public Git tree contains six redacted historical derivatives; pre-redaction hashes are recorded as provenance."
             if already_public
-            else "Git history, untracked files, caches, environments, dependencies and runtime state excluded; five fixed path derivatives disclosed."
+            else "Git history, untracked files, caches, environments, dependencies and runtime state excluded; six fixed path derivatives disclosed."
         ),
         "files": sorted(entries, key=lambda entry: str(entry["path"])),
     }

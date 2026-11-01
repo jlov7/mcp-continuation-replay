@@ -1,4 +1,4 @@
 Building source distribution...
 Building wheel from source distribution...
-Successfully built /private/tmp/mcr-package-build-final-20260922/mcp_continuation_replay-0.0.1.tar.gz
-Successfully built /private/tmp/mcr-package-build-final-20260922/mcp_continuation_replay-0.0.1-py3-none-any.whl
+Successfully built <REDACTED_BUILD_DIR>/mcp_continuation_replay-0.0.1.tar.gz
+Successfully built <REDACTED_BUILD_DIR>/mcp_continuation_replay-0.0.1-py3-none-any.whl

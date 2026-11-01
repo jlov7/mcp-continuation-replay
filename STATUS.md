@@ -10,7 +10,8 @@ That result applies to that commit, not to later source changes.
 
 This version includes the continuation-binding and recovery fixes described
 below, updates citation and software-archive metadata, and expands the
-related-work comparison. The SDK pins and historical research evidence remain
+related-work comparison. Three historical log derivatives now remove recorded
+temporary paths. The SDK pins, frozen source snapshots and matrix results remain
 unchanged. This is a bounded reference implementation with synthetic identities
 and local SQLite effects.
 

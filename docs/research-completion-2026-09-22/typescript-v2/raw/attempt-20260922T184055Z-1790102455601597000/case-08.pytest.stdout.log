@@ -2,7 +2,7 @@ F                                                                        [100%]
 =================================== FAILURES ===================================
 ___________________________ test_guarded_ts_case_08 ____________________________
 
-tmp_path = PosixPath('/private/var/folders/xq/ctgsq65523q9_79h19b0wcyr0000gn/T/pytest-of-<REDACTED_USER>/pytest-199/test_guarded_ts_case_080')
+tmp_path = PosixPath('<REDACTED_TEMP>')
 monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x107b78d60>
 
     def test_guarded_ts_case_08(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -14,7 +14,7 @@ typescript_v2_tests/test_typescript_guarded_matrix.py:96: in _run
     test(tmp_path)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-tmp_path = PosixPath('/private/var/folders/xq/ctgsq65523q9_79h19b0wcyr0000gn/T/pytest-of-<REDACTED_USER>/pytest-199/test_guarded_ts_case_080')
+tmp_path = PosixPath('<REDACTED_TEMP>')
 
     def test_guarded_case_08_independent_processes_serialize_identical_attempts(
         tmp_path: Path,

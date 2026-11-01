@@ -20,6 +20,8 @@ paths. A later SDK result never rewrites an earlier pinned witness.
   software metadata.
 - Expand related work on durable replay, effective-input equivalence and
   uncertain outcomes. Retain the original experiments and SDK pins.
+- Remove the remaining machine-specific temporary paths from three historical
+  logs, preserve artifact filenames and record the deterministic transforms.
 
 ## Public-readiness work — 2026-09-23
 

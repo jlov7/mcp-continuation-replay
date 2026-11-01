@@ -24,9 +24,10 @@ DERIVATIVE_PATHS = {
     "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184055Z-1790102455601597000/case-08.pytest.stdout.log",
     "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184055Z-1790102455601597000/results.jsonl",
     "docs/research-completion-2026-09-22/verification/fresh-install.log",
+    "docs/research-completion-2026-09-22/verification/package-build.log",
     "docs/research-completion-2026-09-22/verification/native-python-and-v2.log",
 }
-# Approved public bytes and private-source provenance for the five historical
+# Approved public bytes and pre-redaction provenance for the six historical
 # derivatives. Public re-exports never need or read the private originals.
 PUBLIC_DERIVATIVE_PROVENANCE = {
     "artifacts/evidence/wire-replay-run.txt": (
@@ -35,7 +36,7 @@ PUBLIC_DERIVATIVE_PROVENANCE = {
         "07fee55f38360a93fb1ac57187dbd3c21fb99df9",
     ),
     "docs/research-completion-2026-09-22/typescript-v2/raw/attempt-20260922T184055Z-1790102455601597000/case-08.pytest.stdout.log": (
-        "bebf3f505c147177ee707efda7ac0e743bb83f33765d49a86ccb711eb453c3dc",
+        "019136d4069afe7ca4b13a4930ded3ca404e0265e40825fd14d79dfd98cc51d9",
         "e5777d04c59473d6d1121d96ec3ff116bbbcdbd8f52feb2db9d653629e22db18",
         "d4092d040f93ec51ed7c86cef967d910cc04ab55",
     ),
@@ -45,7 +46,7 @@ PUBLIC_DERIVATIVE_PROVENANCE = {
         "0b121fa17886e7799a1235228ed0a577d93dd37b",
     ),
     "docs/research-completion-2026-09-22/verification/fresh-install.log": (
-        "5c04bd519c035f41d195d7438b2d8c778023c99730025a78a09d1d716b0619d5",
+        "1378efc5ae80d07403e687b7e1e0dcf747c0ec522ef8955afa5b34c2a7c70f04",
         "6d844d94322c17c02349e9780f59398ef61107ca2dd1b8947c676ba83d6898f0",
         "4cdce331118195f94837de03be4faffe70e3fadd",
     ),
@@ -54,15 +55,25 @@ PUBLIC_DERIVATIVE_PROVENANCE = {
         "77e0b2cd4c933e48864be7d706887e328c83194db24f5775c1c611f932dfe7f2",
         "85a3f303a3ed27a2359933eaeffbe351f77be082",
     ),
+    "docs/research-completion-2026-09-22/verification/package-build.log": (
+        "1b254d12245d7c57271e24a3242b1f65863b3e20413546f6b1559979554f36f8",
+        "de6551b5382e0092cd2f9183526f431a999fee0775e56495566eb1b12c7da261",
+        "4e6150d0171644aaf2d2320133b19b86e9f35bac",
+    ),
 }
 TRANSFORM_FOR_PATH = {
     name: (
-        "pytest_temp_username_to_<REDACTED_USER>"
+        {"pytest_temp_path_to_<REDACTED_TEMP>"}
         if name.endswith("case-08.pytest.stdout.log")
-        else "absolute_home_path_to_<REDACTED_HOME>"
+        else {"absolute_home_path_to_<REDACTED_HOME>"}
     )
     for name in DERIVATIVE_PATHS
 }
+for _name in DERIVATIVE_PATHS:
+    if _name.endswith(("fresh-install.log", "package-build.log")):
+        TRANSFORM_FOR_PATH[_name].add("build_temp_directory_to_<REDACTED_BUILD_DIR>")
+    if _name.endswith("package-build.log"):
+        TRANSFORM_FOR_PATH[_name].remove("absolute_home_path_to_<REDACTED_HOME>")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 FINAL_CASES = (
@@ -211,7 +222,7 @@ def verify_inventory(root: Path) -> dict[str, Any]:
             for transform in transforms:
                 if (
                     not isinstance(transform, dict)
-                    or transform.get("transform") != TRANSFORM_FOR_PATH[name]
+                    or transform.get("transform") not in TRANSFORM_FOR_PATH[name]
                     or type(transform.get("occurrences")) is not int
                     or transform["occurrences"] <= 0
                     or not isinstance(transform.get("matched_prefix"), str)

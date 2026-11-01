@@ -50,6 +50,41 @@ def test_allows_ordinary_source_filename(name: str) -> None:
     assert not _blocked_path(name)
 
 
+@pytest.mark.parametrize("username", ["fixture-user", "<REDACTED_USER>"])
+def test_redacts_entire_historical_pytest_temp_path(username: str) -> None:
+    name = next(
+        path for path in PUBLIC_DERIVATIVE_PROVENANCE if path.endswith("case-08.pytest.stdout.log")
+    )
+    temporary = "/".join(["", "private", "var", "folders", "fixture", "T", f"pytest-of-{username}"])
+    source = f"tmp_path = PosixPath('{temporary}/test-case')\n".encode()
+    clean, transforms = _redact(name, source)
+    assert clean == b"tmp_path = PosixPath('<REDACTED_TEMP>')\n"
+    assert transforms == [
+        {
+            "matched_prefix": "/<temporary-directory>",
+            "occurrences": 1,
+            "transform": "pytest_temp_path_to_<REDACTED_TEMP>",
+        }
+    ]
+
+
+@pytest.mark.parametrize("filename", ["fresh-install.log", "package-build.log"])
+def test_redacts_build_directory_preserving_artifact_name(filename: str) -> None:
+    name = next(path for path in PUBLIC_DERIVATIVE_PROVENANCE if path.endswith(filename))
+    temporary = str(Path("/") / "private" / "tmp" / "fixture-build" / "package-0.0.1.whl")
+    home = str(Path("/") / "Users" / "fixture-user" / "cache")
+    source = (
+        f"cache: {home}\nProcessing {temporary}\n"
+        if filename == "fresh-install.log"
+        else f"Successfully built {temporary}\n"
+    ).encode()
+    clean, transforms = _redact(name, source)
+    assert b"<REDACTED_BUILD_DIR>/package-0.0.1.whl" in clean
+    assert temporary.encode() not in clean and home.encode() not in clean
+    assert transforms[-1]["transform"] == "build_temp_directory_to_<REDACTED_BUILD_DIR>"
+    assert transforms[-1]["occurrences"] == 1
+
+
 def _git(root: Path, *args: str) -> None:
     subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True)
 

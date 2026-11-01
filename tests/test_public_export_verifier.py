@@ -8,7 +8,12 @@ from pathlib import Path
 
 import pytest
 
-from scripts.verify_public_export import DERIVATIVE_PATHS, MANIFEST, verify_inventory
+from scripts.verify_public_export import (
+    DERIVATIVE_PATHS,
+    MANIFEST,
+    TRANSFORM_FOR_PATH,
+    verify_inventory,
+)
 
 
 def _digest(data: bytes) -> str:
@@ -35,9 +40,7 @@ def _fixture(root: Path) -> dict:
                 "transforms": (
                     [
                         {
-                            "transform": "pytest_temp_username_to_<REDACTED_USER>"
-                            if name.endswith("case-08.pytest.stdout.log")
-                            else "absolute_home_path_to_<REDACTED_HOME>",
+                            "transform": min(TRANSFORM_FOR_PATH[name]),
                             "matched_prefix": "synthetic",
                             "occurrences": 1,
                         }
