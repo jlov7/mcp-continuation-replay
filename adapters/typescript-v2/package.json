@@ -1,6 +1,6 @@
 {
   "name": "mcp-continuation-replay-typescript-v2-guarded-fixture",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Isolated current SDK runtime for the guarded stdio matrix",
   "dependencies": {

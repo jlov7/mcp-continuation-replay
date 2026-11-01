@@ -6,6 +6,14 @@ reliability or independent replication. [Hosted CI succeeded for public commit
 `1a95c85`](https://github.com/jlov7/mcp-continuation-replay/actions/runs/36050153362).
 That result applies to that commit, not to later source changes.
 
+## Version 0.0.2
+
+This version includes the continuation-binding and recovery fixes described
+below, updates citation and software-archive metadata, and expands the
+related-work comparison. The SDK pins and historical research evidence remain
+unchanged. This is a bounded reference implementation with synthetic identities
+and local SQLite effects.
+
 ## Current source review, 2026-09-28
 
 An independent read-only Claude Opus 5.5 review identified a TypeScript v2

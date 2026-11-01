@@ -1,0 +1,29 @@
+{
+  "title": "MCP Continuation Replay: pinned wire witnesses and guarded recovery reference",
+  "version": "0.0.2",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Lovell, Jason Mark",
+      "orcid": "0009-0001-6300-9155"
+    }
+  ],
+  "description": "<p>A local SQLite reference implementation and pinned MCP SDK wire tests for continuation replay and uncertain tool outcomes. The artifact includes retained test vectors, wire transcripts and database readback. Its checks use synthetic identities and local effects; they do not establish production reliability, independent replication or a general exactly-once guarantee.</p>",
+  "access_right": "open",
+  "license": "mit",
+  "language": "eng",
+  "keywords": [
+    "Model Context Protocol",
+    "continuation replay",
+    "idempotency",
+    "uncertain outcomes",
+    "research software"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/jlov7/mcp-continuation-replay",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

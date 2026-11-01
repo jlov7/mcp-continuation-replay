@@ -1,10 +1,10 @@
 [project]
 name = "mcp-continuation-replay"
-version = "0.0.1"
+version = "0.0.2"
 description = "Reference implementation and tests for MCP continuation replay after lost replies."
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Jason Lovell" }]
+authors = [{ name = "Jason Mark Lovell" }]
 license = { file = "LICENSE" }
 keywords = ["mcp", "idempotency", "interoperability", "continuation-replay", "unknown-outcome"]
 classifiers = [

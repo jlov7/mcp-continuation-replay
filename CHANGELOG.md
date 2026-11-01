@@ -1,13 +1,13 @@
 # Change history and version policy
 
 This project uses small, explicit source releases rather than implying a
-stable protocol API. The installed fingerprint package is currently `0.0.1`.
+stable protocol API. The installed fingerprint package is currently `0.0.2`.
 A version change records behavior, exact SDK pins, support matrix, test gates,
 source commit and distributed archive digest. Pinned research observations and
 their raw evidence are retained; new experiments use new protocol/attempt
 paths. A later SDK result never rewrites an earlier pinned witness.
 
-## Unreleased
+## 0.0.2
 
 - Bind TypeScript v2 continuation state to the elicited title and mode.
 - Ignore unrelated input-response fields and reissue a missing body request in
@@ -16,6 +16,10 @@ paths. A later SDK result never rewrites an earlier pinned witness.
 - Return no stored result for an orphaned effect, and add wire, status and
   fixed-digest regression checks.
 - Clarify Tasks, SDK error-channel differences and historical CI scope.
+- Update citation metadata with the author's ORCID and add matching Zenodo
+  software metadata.
+- Expand related work on durable replay, effective-input equivalence and
+  uncertain outcomes. Retain the original experiments and SDK pins.
 
 ## Public-readiness work — 2026-09-23
 

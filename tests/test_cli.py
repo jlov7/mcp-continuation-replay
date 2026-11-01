@@ -34,7 +34,7 @@ def _run(
 def test_cli_version() -> None:
     result = _run("--version", with_key=False)
     assert result.returncode == 0
-    assert result.stdout.strip() == "0.0.1"
+    assert result.stdout.strip() == "0.0.2"
 
 
 def test_cli_fingerprints_jsonl() -> None:

@@ -1,11 +1,12 @@
 cff-version: 1.2.0
-message: "If you use this bounded research software, cite this source release and its exact archive receipt."
+message: "If you use this research software, cite the exact source release."
 title: "MCP Continuation Replay: pinned wire witnesses and guarded recovery reference"
 type: software
 authors:
   - family-names: Lovell
-    given-names: Jason
-version: 0.0.1
+    given-names: Jason Mark
+    orcid: https://orcid.org/0009-0001-6300-9155
+version: 0.0.2
 license: MIT
-abstract: "A local SQLite reference and pinned MCP SDK wire evidence for continuation replay and uncertain outcomes."
+abstract: "A local SQLite reference implementation and pinned MCP SDK wire tests for continuation replay and uncertain tool outcomes. The artifact includes retained test vectors, wire transcripts and database readback. Its checks use synthetic identities and local effects; they do not establish production reliability, independent replication or a general exactly-once guarantee."
 repository-code: https://github.com/jlov7/mcp-continuation-replay
