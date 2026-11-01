@@ -7,6 +7,8 @@ authors:
     given-names: Jason Mark
     orcid: https://orcid.org/0009-0001-6300-9155
 version: 0.0.2
+doi: 10.5281/zenodo.23862478
+date-released: 2026-11-01
 license: MIT
 abstract: "A local SQLite reference implementation and pinned MCP SDK wire tests for continuation replay and uncertain tool outcomes. The artifact includes retained test vectors, wire transcripts and database readback. Its checks use synthetic identities and local effects; they do not establish production reliability, independent replication or a general exactly-once guarantee."
 repository-code: https://github.com/jlov7/mcp-continuation-replay
